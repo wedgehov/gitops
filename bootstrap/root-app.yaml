@@ -9,8 +9,9 @@ spec:
   source:
     repoURL: https://github.com/wedgehov/gitops.git
     targetRevision: HEAD
-    # This root app's source is the directory containing the CHILD app manifests.
     path: apps
+    directory:
+      recurse: true
 
   destination:
     server: https://kubernetes.default.svc
