@@ -4,3 +4,7 @@ configs:
   params:
     "server.insecure": true # Use this for simplicity in a dev environment. Allows HTTP access to the UI.
     "server.disable.auth": false # Ensures the local admin user is enabled for UI login.
+
+server:
+  service:
+    type: NodePort
