@@ -76,7 +76,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/todo-api:v1.0.5"
+        image: "ghcr.io/wedgehov/todo-api:v1.0.6"
         imagePullPolicy: IfNotPresent
         env:
         - name: FrontendOrigin
@@ -120,7 +120,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: "ghcr.io/wedgehov/todo-frontend:v1.0.5"
+        image: "ghcr.io/wedgehov/todo-frontend:v1.0.6"
         imagePullPolicy: IfNotPresent
         env:
         - name: API_URL
