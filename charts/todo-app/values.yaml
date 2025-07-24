@@ -6,13 +6,13 @@ frontend:
   image:
     repository: ghcr.io/wedgehov/todo-frontend
     pullPolicy: IfNotPresent
-    tag: "v1.0.5"
+    tag: "v1.0.6"
 
 backend:
   image:
     repository: ghcr.io/wedgehov/todo-api
     pullPolicy: IfNotPresent
-    tag: "v1.0.5"
+    tag: "v1.0.6"
 
 database:
   image:
