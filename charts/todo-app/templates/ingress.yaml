@@ -1,0 +1,41 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-todo-app-ingress
+  annotations:
+    # Increase timeouts for long-lived SignalR WebSocket connections
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # Ensure the NGINX proxy doesn't buffer the response, which helps with real-time streams
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+  - host: {{ .Values.ingress.host | quote }}
+    http:
+      paths:
+      # Route API and SignalR traffic to the backend service
+      - path: /todos
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-backend
+            port:
+              number: 80
+      - path: /todohub
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-backend
+            port:
+              number: 80
+      # Route all other traffic (the root path) to the frontend service
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-frontend
+            port:
+              number: 80
+{{- end }}

@@ -1,0 +1,6 @@
+# Overrides for the 'todo-app' in the 'dev' environment
+ingress:
+  host: todo-app-dev.serit.dev # The final public hostname for this app
+
+networkPolicy:
+  enabled: true

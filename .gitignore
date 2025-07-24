@@ -1,0 +1,17 @@
+# Local environment files
+.env
+.envrc
+
+# IDE and editor directories
+.vscode/
+.idea/
+
+# OS-generated files
+.DS_Store
+
+# Common temporary/backup files
+*.swp
+*.bak
+
+# Prevent accidental commit of downloaded credentials
+*.json

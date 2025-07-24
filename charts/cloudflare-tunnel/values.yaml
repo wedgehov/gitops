@@ -1,0 +1,12 @@
+replicaCount: 2 # Default to 2 for HA on your 2 worker nodes
+
+tunnel:
+  name: my-sandbox-tunnel
+  credentialsSecretName: cloudflared-tunnel-credentials
+
+# This is the key part: the tunnel points all traffic to the ingress controller.
+# The ingress controller will then route it to the correct application.
+ingress:
+  # This should be the service name of your Ingress Controller
+  service: ingress-nginx-controller.ingress-nginx.svc:80
+
