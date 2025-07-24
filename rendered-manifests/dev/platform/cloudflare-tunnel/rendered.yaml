@@ -1,0 +1,75 @@
+---
+# Source: cloudflare-tunnel/templates/tunnel.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: cloudflared
+data:
+  config.yaml: |
+    tunnel: vegard-sandbox-tunnel
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    ingress:
+      # This is a catch-all rule. It sends ALL traffic from the tunnel
+      # to the ingress controller, which will then handle the routing.
+      - service: http://ingress-nginx-controller.ingress-nginx.svc:80
+      - service: http_status:404
+---
+# Source: cloudflare-tunnel/templates/tunnel.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-tunnel
+  namespace: cloudflared
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2024.5.0
+          args:
+            - tunnel
+            - --config
+            - /etc/cloudflared/config/config.yaml
+            - run
+          # Add liveness and readiness probes to ensure the tunnel is healthy.
+          # Kubernetes will restart the pod if these probes fail.
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 2000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 2000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/cloudflared/config
+              readOnly: true
+            - name: creds-volume
+              mountPath: /etc/cloudflared/creds
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: cloudflared-config
+            items:
+              - key: config.yaml
+                path: config.yaml
+        - name: creds-volume
+          secret:
+            secretName: cloudflared-tunnel-credentials
+            items:
+              - key: credentials.json
+                path: credentials.json

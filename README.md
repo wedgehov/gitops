@@ -130,7 +130,6 @@ This is the one-time process to set up a new cluster and connect it to this GitO
 ### Prerequisites
 *   `kubectl` configured to point to your target cluster.
 *   `just` installed (`brew install just` or similar).
-*   A minimal Argo CD installed on the cluster.
 *   The Nutanix CSI driver must be manually installed on the cluster for Persistent Volume Claims to work.
 
 ### Manual Dependencies (The "Almost" in GitOps)
@@ -141,20 +140,20 @@ This repository follows GitOps principles, but with a few exceptions that make i
 
 2.  **Secrets**: All secrets are managed manually and are not stored in Git. Before bootstrapping, you must create the necessary secrets on the cluster.
 
-    *   **Example: Creating the PostgreSQL secret for `todo-app`**:
+    *   **Create Namespaces**: First, create the namespaces where your applications and their secrets will live.
         ```bash
-        # Note: The namespace (e.g., todo-app-dev) must exist first.
-        # The Argo CD Application manifest can create it with `syncOptions.CreateNamespace=true`.
+        kubectl create namespace todo-app-dev
+        kubectl create namespace cloudflared
+        ```
+
+    *   **Create Secrets**: Now, create the secrets within their respective namespaces.
+        ```bash
+        # Create the PostgreSQL secret for todo-app
         kubectl create secret generic todo-app-db-secret \
           --from-literal=postgres-password='YOUR_SECURE_DATABASE_PASSWORD' \
           -n todo-app-dev
-        ```
 
-    *   **Example: Creating the Cloudflare Tunnel secret**:
-        ```bash
-        # Ensure the cloudflared namespace exists
-        kubectl create ns cloudflared
-        # Create the secret from your downloaded JSON key file
+        # Create the Cloudflare Tunnel secret from your downloaded JSON key file
         kubectl create secret generic cloudflared-tunnel-credentials \
           --from-file=credentials.json=/path/to/your/tunnel-credentials.json \
           -n cloudflared
@@ -187,18 +186,19 @@ This repository follows GitOps principles, but with a few exceptions that make i
 
 5.  **Bootstrap the Cluster**:
     *   Run the bootstrap command. This applies the `root` application, which will then find and deploy all the other applications from the `apps/` directory.
+    *   This command is safe to run multiple times. It will first ensure Argo CD is installed/updated from your rendered manifests, and then apply the `root` application.
     ```bash
     just bootstrap
     ```
 
 6.  **Verify**:
-    *   Open the Argo CD UI. You should see the `root` application, which will in turn create the `argocd`, `cloudflare-tunnel`, and `todo-app-dev` applications.
+    *   Get the initial admin password and log in to the Argo CD UI. You should see the `root` application, which will in turn create the `argocd`, `cloudflare-tunnel`, and `todo-app-dev` applications.
 
 ### Re-bootstrapping and Upgrading Argo CD
 
 **What happens if I run `just bootstrap` again?**
 
-It is safe to re-run `just bootstrap`. The command uses `kubectl apply`, which is declarative. If the `root` application already exists and is unchanged in Git, `kubectl` will do nothing. If you have updated `bootstrap/root-app.yaml`, it will apply those changes.
+It is safe to re-run `just bootstrap`. The command uses `kubectl apply`, which is declarative. It will ensure the `argocd` namespace exists, apply the latest rendered manifests for Argo CD itself, and then apply the `root` application. If nothing has changed, `kubectl` will report that the resources are unchanged.
 
 **How do I upgrade Argo CD?**
 
