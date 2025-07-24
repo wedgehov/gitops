@@ -4,18 +4,18 @@ This repository contains the Kubernetes manifests and configuration for deployin
 
 ## Core Concepts
 
-This repository is built on three key patterns: the **App of Apps Pattern**, the **One-Chart-Per-App Pattern**, and the **Rendered Manifests Pattern**.
+This repository is built on three key patterns: the **ApplicationSet Pattern**, the **One-Chart-Per-App Pattern**, and the **Rendered Manifests Pattern**.
 
-### App of Apps Pattern
+### ApplicationSet Pattern
 
-Instead of manually applying the manifests for every application, we use a single "root" application (`bootstrap/root-app.yaml`) to manage all other "child" applications.
+Instead of manually managing individual Argo CD `Application` resources, we use a single `ApplicationSet` resource (`bootstrap/root-app.yaml`) to generate them. This is a more powerful and declarative version of the "App of Apps" pattern.
 
-1.  A minimal Argo CD is installed on the cluster.
-2.  The `root-app.yaml` is manually applied **once**.
-3.  This `root` application watches the `apps/` directory in this repository.
-4.  For every application manifest it finds (e.g., `apps/user/todo-app.yaml`), it automatically creates the corresponding Argo CD `Application` in the cluster.
+1.  The `just bootstrap` command installs Argo CD on the cluster.
+2.  The `root-app.yaml` `ApplicationSet` is then manually applied **once**.
+3.  This `ApplicationSet` uses a `list` generator to explicitly define all the applications that should exist in the cluster.
+4.  For every element in the list, it uses a `template` to generate a standard Argo CD `Application` resource.
 
-This means that to add or remove an application from the cluster, you simply add or remove its manifest from the `apps/` directory and push to Git. Argo CD handles the rest.
+This means that to add or remove an application from the cluster, you simply add or remove an entry from the `elements` list in `bootstrap/root-app.yaml` and push to Git. Argo CD handles the rest.
 
 ### One-Chart-Per-App vs. Monolithic Chart
 
@@ -65,13 +65,8 @@ The patterns chosen for this repository are based on common industry practices. 
 
 The repository is organized to cleanly separate concerns: application templates (charts), environment-specific configuration (values), and the final rendered manifests that Argo CD will deploy.
 
-```
+```text
 my-gitops-repo/
-├── apps/
-│   ├── platform/
-│   │   └── cloudflare-tunnel.yaml
-│   └── user/
-│       └── todo-app.yaml
 ├── bootstrap/
 │   └── root-app.yaml
 ├── charts/
@@ -80,6 +75,8 @@ my-gitops-repo/
 ├── rendered-manifests/
 │   └── dev/
 │       ├── platform/
+│       │   ├── argocd/
+│       │   │   └── rendered.yaml
 │       │   └── cloudflare-tunnel/
 │       │       └── rendered.yaml
 │       └── user/
@@ -87,6 +84,7 @@ my-gitops-repo/
 │               └── rendered.yaml
 ├── values/
 │   ├── platform/
+│   │   ├── argocd-dev.yaml
 │   │   └── dev.yaml
 │   └── user/
 │       └── todo-app/
@@ -130,6 +128,7 @@ This is the one-time process to set up a new cluster and connect it to this GitO
 ### Prerequisites
 *   `kubectl` configured to point to your target cluster.
 *   `just` installed (`brew install just` or similar).
+*   A minimal Argo CD installed on the cluster.
 *   The Nutanix CSI driver must be manually installed on the cluster for Persistent Volume Claims to work.
 
 ### Manual Dependencies (The "Almost" in GitOps)
@@ -140,20 +139,20 @@ This repository follows GitOps principles, but with a few exceptions that make i
 
 2.  **Secrets**: All secrets are managed manually and are not stored in Git. Before bootstrapping, you must create the necessary secrets on the cluster.
 
-    *   **Create Namespaces**: First, create the namespaces where your applications and their secrets will live.
+    *   **Example: Creating the PostgreSQL secret for `todo-app`**:
         ```bash
-        kubectl create namespace todo-app-dev
-        kubectl create namespace cloudflared
-        ```
-
-    *   **Create Secrets**: Now, create the secrets within their respective namespaces.
-        ```bash
-        # Create the PostgreSQL secret for todo-app
+        # Note: The namespace (e.g., todo-app-dev) must exist first.
+        # The Argo CD Application manifest can create it with `syncOptions.CreateNamespace=true`.
         kubectl create secret generic todo-app-db-secret \
           --from-literal=postgres-password='YOUR_SECURE_DATABASE_PASSWORD' \
           -n todo-app-dev
+        ```
 
-        # Create the Cloudflare Tunnel secret from your downloaded JSON key file
+    *   **Example: Creating the Cloudflare Tunnel secret**:
+        ```bash
+        # Ensure the cloudflared namespace exists
+        kubectl create ns cloudflared
+        # Create the secret from your downloaded JSON key file
         kubectl create secret generic cloudflared-tunnel-credentials \
           --from-file=credentials.json=/path/to/your/tunnel-credentials.json \
           -n cloudflared
@@ -186,19 +185,18 @@ This repository follows GitOps principles, but with a few exceptions that make i
 
 5.  **Bootstrap the Cluster**:
     *   Run the bootstrap command. This applies the `root` application, which will then find and deploy all the other applications from the `apps/` directory.
-    *   This command is safe to run multiple times. It will first ensure Argo CD is installed/updated from your rendered manifests, and then apply the `root` application.
     ```bash
     just bootstrap
     ```
 
 6.  **Verify**:
-    *   Get the initial admin password and log in to the Argo CD UI. You should see the `root` application, which will in turn create the `argocd`, `cloudflare-tunnel`, and `todo-app-dev` applications.
+    *   Open the Argo CD UI. You should see the `root` application, which will in turn create the `argocd`, `cloudflare-tunnel`, and `todo-app-dev` applications.
 
 ### Re-bootstrapping and Upgrading Argo CD
 
 **What happens if I run `just bootstrap` again?**
 
-It is safe to re-run `just bootstrap`. The command uses `kubectl apply`, which is declarative. It will ensure the `argocd` namespace exists, apply the latest rendered manifests for Argo CD itself, and then apply the `root` application. If nothing has changed, `kubectl` will report that the resources are unchanged.
+It is safe to re-run `just bootstrap`. The command uses `kubectl apply`, which is declarative. If the `root` application already exists and is unchanged in Git, `kubectl` will do nothing. If you have updated `bootstrap/root-app.yaml`, it will apply those changes.
 
 **How do I upgrade Argo CD?**
 

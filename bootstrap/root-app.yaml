@@ -1,23 +1,43 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
   name: root
   namespace: argocd
 spec:
-  project: default
-
-  source:
-    repoURL: https://github.com/wedgehov/gitops.git
-    targetRevision: HEAD
-    path: apps
-    directory:
-      recurse: true
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd # The child Application objects will be created in the argocd namespace
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  generators:
+  - list:
+      elements:
+      # Platform Applications
+      - name: argocd
+        path: rendered-manifests/dev/platform/argocd
+        namespace: argocd
+      - name: cloudflare-tunnel
+        path: rendered-manifests/dev/platform/cloudflare-tunnel
+        namespace: cloudflared
+      # User Applications
+      - name: todo-app-dev
+        path: rendered-manifests/dev/user/todo-app
+        namespace: todo-app-dev
+  template:
+    metadata:
+      # The name of the generated Application comes from the 'name' field in the elements list above.
+      name: '{{name}}'
+      # All generated Application objects will be created in the `argocd` namespace.
+      namespace: 'argocd'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/wedgehov/gitops.git
+        targetRevision: HEAD
+        # The path for the rendered manifests comes from the 'path' field in the elements list.
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        # The destination namespace for the application's resources comes from the 'namespace' field.
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
