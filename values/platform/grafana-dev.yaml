@@ -13,14 +13,17 @@ ingress:
 
 # Configure Grafana's settings via the grafana.ini file
 grafana.ini:
-  # Enable anonymous access
-  auth.anonymous:
-    enabled: true
-    org_name: Main Org.
-    org_role: Viewer
-  # Disable the login form for anonymous users to create a cleaner public view
   auth:
+    # Enable anonymous access
+    anonymous:
+      enabled: true
+      org_name: Main Org.
+      org_role: Viewer
+    # Disable the login form for anonymous users to create a cleaner public view
     disable_login_form: true
+  # Set the default home dashboard
+  dashboards:
+    default_home_dashboard_path: /var/lib/grafana/dashboards/default/welcome-dashboard.json
 
 # Define dashboards declaratively. Grafana will automatically load them.
 dashboards:
