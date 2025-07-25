@@ -17,6 +17,11 @@ spec:
       - name: grafana
         path: rendered-manifests/dev/platform/grafana
         namespace: monitoring
+      - name: prometheus-crds
+        path: rendered-manifests/dev/platform/prometheus-crds
+        namespace: monitoring
+        # Use a sync-wave to ensure CRDs are created before the main stack.
+        wave: "-1"
       - name: prometheus-stack
         path: rendered-manifests/dev/platform/prometheus-stack
         namespace: monitoring
@@ -30,6 +35,9 @@ spec:
       name: '{{name}}'
       # All generated Application objects will be created in the `argocd` namespace.
       namespace: 'argocd'
+      annotations:
+        # The sync-wave comes from the 'wave' field in the elements list.
+        argocd.argoproj.io/sync-wave: '{{wave | default "0"}}'
     spec:
       project: default
       source:

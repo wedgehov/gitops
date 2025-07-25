@@ -8,7 +8,7 @@ PROMETHEUS_CHART_VERSION := "57.0.1" # A recent, stable version
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-grafana-dev render-prometheus-dev render-todo-app-dev
+render-all-dev: render-argocd-dev render-platform-dev render-grafana-dev render-prometheus-crds-dev render-prometheus-dev render-todo-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -35,6 +35,20 @@ render-grafana-dev:
 	helm repo add grafana {{GRAFANA_HELM_REPO}} --force-update
 	helm template grafana grafana/grafana --version {{GRAFANA_CHART_VERSION}} --namespace monitoring -f ./values/platform/grafana-dev.yaml > ./rendered-manifests/dev/platform/grafana/rendered.yaml
 	echo "Rendered grafana for dev."
+
+render-prometheus-crds-dev:
+	mkdir -p rendered-manifests/dev/platform/prometheus-crds
+	helm repo add prometheus-community {{PROMETHEUS_HELM_REPO}} --force-update
+	helm template prometheus-crds prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring \
+	  --include-crds \
+	  --set alertmanager.enabled=false \
+	  --set grafana.enabled=false \
+	  --set kube-state-metrics.enabled=false \
+	  --set prometheus.enabled=false \
+	  --set prometheusOperator.enabled=false \
+	  --set prometheus-node-exporter.enabled=false \
+	  > ./rendered-manifests/dev/platform/prometheus-crds/rendered.yaml
+	echo "Rendered prometheus-crds for dev."
 
 render-prometheus-dev:
 	mkdir -p rendered-manifests/dev/platform/prometheus-stack

@@ -1,5 +1,9 @@
 # Overrides for the kube-prometheus-stack helm chart for the 'dev' environment
 
+# CRDs are installed by a separate 'prometheus-crds' application.
+crds:
+  enabled: false
+
 # We already have a Grafana instance, so disable the one in this chart.
 grafana:
   enabled: false
