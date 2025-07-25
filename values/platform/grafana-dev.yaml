@@ -10,3 +10,48 @@ ingress:
   ingressClassName: nginx
   hosts:
     - grafana-dev.serit.dev
+
+# Configure Grafana's settings via the grafana.ini file
+grafana.ini:
+  # Enable anonymous access
+  auth.anonymous:
+    enabled: true
+    org_name: Main Org.
+    org_role: Viewer
+  # Disable the login form for anonymous users to create a cleaner public view
+  auth:
+    disable_login_form: true
+
+# Define dashboards declaratively. Grafana will automatically load them.
+dashboards:
+  default:
+    # A unique key for this dashboard
+    welcome-dashboard:
+      # The JSON model for the dashboard
+      json: |
+        {
+          "__inputs": [],
+          "__requires": [],
+          "annotations": {
+            "list": []
+          },
+          "editable": true,
+          "gnetId": null,
+          "graphTooltip": 0,
+          "id": 1,
+          "links": [],
+          "panels": [
+            {
+              "type": "text",
+              "title": "Welcome!",
+              "gridPos": { "x": 0, "y": 0, "w": 12, "h": 5 },
+              "id": 2,
+              "options": {
+                "content": "## Welcome to our new Grafana instance!\n\nThis dashboard is publicly accessible."
+              }
+            }
+          ],
+          "schemaVersion": 36,
+          "title": "Welcome Dashboard",
+          "version": 1
+        }
