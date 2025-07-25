@@ -9,4 +9,4 @@ ingress:
   enabled: true
   ingressClassName: nginx
   hosts:
-    - grafana.dev.serit.dev
+    - grafana-dev.serit.dev
