@@ -30,5 +30,9 @@ spec:
       - name: frontend
         image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
         imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+        env:
+        - name: API_URL
+          # This is only used to satisfy the NGINX startup script in the container.
+          value: "http://{{ .Release.Name }}-backend"
         ports:
         - containerPort: 80

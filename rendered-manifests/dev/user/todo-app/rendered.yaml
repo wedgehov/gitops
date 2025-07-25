@@ -122,6 +122,10 @@ spec:
       - name: frontend
         image: "ghcr.io/wedgehov/todo-frontend:v1.0.7"
         imagePullPolicy: IfNotPresent
+        env:
+        - name: API_URL
+          # This is only used to satisfy the NGINX startup script in the container.
+          value: "http://todo-app-backend"
         ports:
         - containerPort: 80
 ---
