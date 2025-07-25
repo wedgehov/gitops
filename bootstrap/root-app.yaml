@@ -14,10 +14,10 @@ spec:
       - name: cloudflare-tunnel
         path: rendered-manifests/dev/platform/cloudflare-tunnel
         namespace: cloudflared
-      # User Applications (todo-app-dev is temporarily removed for maintenance)
-      # - name: todo-app-dev
-      #   path: rendered-manifests/dev/user/todo-app
-      #   namespace: todo-app-dev
+      # User Applications
+      - name: todo-app-dev
+        path: rendered-manifests/dev/user/todo-app
+        namespace: todo-app-dev
   template:
     metadata:
       # The name of the generated Application comes from the 'name' field in the elements list above.

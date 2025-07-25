@@ -30,9 +30,5 @@ spec:
       - name: frontend
         image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
         imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
-        env:
-        - name: API_URL
-          # The backend service is in the same namespace, so we can use the short name.
-          value: "http://{{ .Release.Name }}-backend"
         ports:
         - containerPort: 80

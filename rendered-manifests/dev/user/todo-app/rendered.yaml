@@ -122,10 +122,6 @@ spec:
       - name: frontend
         image: "ghcr.io/wedgehov/todo-frontend:v1.0.6"
         imagePullPolicy: IfNotPresent
-        env:
-        - name: API_URL
-          # The backend service is in the same namespace, so we can use the short name.
-          value: "http://todo-app-backend"
         ports:
         - containerPort: 80
 ---
