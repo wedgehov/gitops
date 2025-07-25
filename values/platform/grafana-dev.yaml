@@ -23,38 +23,32 @@ grafana.ini:
     disable_login_form: true
   # Set the default home dashboard
   dashboards:
-    default_home_dashboard_path: /var/lib/grafana/dashboards/default/welcome-dashboard.json
+    # This path corresponds to the 'Kubernetes / Compute Resources / Cluster' dashboard
+    # that will be automatically discovered from the kube-prometheus-stack.
+    default_home_dashboard_path: /var/lib/grafana/dashboards/default/k8s-compute-resources-cluster.json
 
 # Define dashboards declaratively. Grafana will automatically load them.
 dashboards:
-  default:
-    # A unique key for this dashboard
-    welcome-dashboard:
-      # The JSON model for the dashboard
-      json: |
-        {
-          "__inputs": [],
-          "__requires": [],
-          "annotations": {
-            "list": []
-          },
-          "editable": true,
-          "gnetId": null,
-          "graphTooltip": 0,
-          "id": 1,
-          "links": [],
-          "panels": [
-            {
-              "type": "text",
-              "title": "Welcome!",
-              "gridPos": { "x": 0, "y": 0, "w": 12, "h": 5 },
-              "id": 2,
-              "options": {
-                "content": "## Welcome to our new Grafana instance!\n\nThis dashboard is publicly accessible."
-              }
-            }
-          ],
-          "schemaVersion": 36,
-          "title": "Welcome Dashboard",
-          "version": 1
-        }
+  default: {} # We are now discovering dashboards, so this can be empty.
+
+# Configure a sidecar to discover dashboards from ConfigMaps
+sidecar:
+  dashboards:
+    enabled: true
+    # Search for dashboard ConfigMaps in the 'monitoring' namespace
+    searchNamespace: "monitoring"
+    # The label that the kube-prometheus-stack chart uses for its dashboards
+    label: grafana_dashboard
+    labelValue: "1"
+
+# Define data sources declaratively
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      # The URL for the Prometheus service created by the kube-prometheus-stack chart
+      url: http://prometheus-stack-kube-prometheus-prometheus.monitoring.svc:9090
+      access: proxy
+      isDefault: true

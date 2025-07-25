@@ -17,6 +17,9 @@ spec:
       - name: grafana
         path: rendered-manifests/dev/platform/grafana
         namespace: monitoring
+      - name: prometheus-stack
+        path: rendered-manifests/dev/platform/prometheus-stack
+        namespace: monitoring
       # User Applications
       - name: todo-app-dev
         path: rendered-manifests/dev/user/todo-app

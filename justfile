@@ -3,10 +3,12 @@ ARGOCD_HELM_REPO := "https://argoproj.github.io/argo-helm"
 ARGOCD_CHART_VERSION := "5.51.5"
 GRAFANA_HELM_REPO := "https://grafana.github.io/helm-charts"
 GRAFANA_CHART_VERSION := "7.3.11" # A recent, stable version
+PROMETHEUS_HELM_REPO := "https://prometheus-community.github.io/helm-charts"
+PROMETHEUS_CHART_VERSION := "57.0.1" # A recent, stable version
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-grafana-dev render-todo-app-dev
+render-all-dev: render-argocd-dev render-platform-dev render-grafana-dev render-prometheus-dev render-todo-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -33,6 +35,12 @@ render-grafana-dev:
 	helm repo add grafana {{GRAFANA_HELM_REPO}} --force-update
 	helm template grafana grafana/grafana --version {{GRAFANA_CHART_VERSION}} --namespace monitoring -f ./values/platform/grafana-dev.yaml > ./rendered-manifests/dev/platform/grafana/rendered.yaml
 	echo "Rendered grafana for dev."
+
+render-prometheus-dev:
+	mkdir -p rendered-manifests/dev/platform/prometheus-stack
+	helm repo add prometheus-community {{PROMETHEUS_HELM_REPO}} --force-update
+	helm template prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring -f ./values/platform/prometheus-dev.yaml > ./rendered-manifests/dev/platform/prometheus-stack/rendered.yaml
+	echo "Rendered prometheus-stack for dev."
 
 render-argocd-dev:
 	mkdir -p rendered-manifests/dev/platform/argocd

@@ -1,0 +1,27 @@
+# Overrides for the kube-prometheus-stack helm chart for the 'dev' environment
+
+# We already have a Grafana instance, so disable the one in this chart.
+grafana:
+  enabled: false
+
+# Disable alertmanager for now to keep the setup simple.
+alertmanager:
+  enabled: false
+
+# Configure Prometheus itself
+prometheus:
+  # Expose the Prometheus UI via an Ingress
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus-dev.serit.dev
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nutanix-volume
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
