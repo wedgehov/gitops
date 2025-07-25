@@ -31,11 +31,14 @@ spec:
       - name: backend
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - >-
+          export ConnectionStrings__TodosDb="Host={{ .Release.Name }}-database;Port=5432;Database={{ .Values.database.dbName }};Username={{ .Values.database.user }};Password=${POSTGRES_PASSWORD}";
+          exec dotnet TodoApi.dll
         env:
         - name: FrontendOrigin
           value: https://{{ .Values.ingress.host }}
-        - name: ConnectionStrings__TodosDb
-          value: "Host={{ .Release.Name }}-database;Port=5432;Database={{ .Values.database.dbName }};Username={{ .Values.database.user }};Password=$(POSTGRES_PASSWORD)"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:

@@ -78,11 +78,14 @@ spec:
       - name: backend
         image: "ghcr.io/wedgehov/todo-api:v1.0.7"
         imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+        - >-
+          export ConnectionStrings__TodosDb="Host=todo-app-database;Port=5432;Database=todo_db;Username=todo_user;Password=${POSTGRES_PASSWORD}";
+          exec dotnet TodoApi.dll
         env:
         - name: FrontendOrigin
           value: https://todo-app-dev.serit.dev
-        - name: ConnectionStrings__TodosDb
-          value: "Host=todo-app-database;Port=5432;Database=todo_db;Username=todo_user;Password=$(POSTGRES_PASSWORD)"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
