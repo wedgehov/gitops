@@ -1,10 +1,12 @@
 # Variables for Helm charts from public repositories
 ARGOCD_HELM_REPO := "https://argoproj.github.io/argo-helm"
 ARGOCD_CHART_VERSION := "5.51.5"
+GRAFANA_HELM_REPO := "https://grafana.github.io/helm-charts"
+GRAFANA_CHART_VERSION := "7.3.11" # A recent, stable version
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-todo-app-dev
+render-all-dev: render-argocd-dev render-platform-dev render-grafana-dev render-todo-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -25,6 +27,12 @@ render-platform-dev:
 	mkdir -p rendered-manifests/dev/platform/cloudflare-tunnel
 	helm template cloudflare-tunnel ./charts/cloudflare-tunnel --namespace cloudflared -f ./values/platform/dev.yaml > ./rendered-manifests/dev/platform/cloudflare-tunnel/rendered.yaml
 	echo "Rendered cloudflare-tunnel for dev."
+
+render-grafana-dev:
+	mkdir -p rendered-manifests/dev/platform/grafana
+	helm repo add grafana {{GRAFANA_HELM_REPO}} --force-update
+	helm template grafana grafana/grafana --version {{GRAFANA_CHART_VERSION}} --namespace monitoring -f ./values/platform/grafana-dev.yaml > ./rendered-manifests/dev/platform/grafana/rendered.yaml
+	echo "Rendered grafana for dev."
 
 render-argocd-dev:
 	mkdir -p rendered-manifests/dev/platform/argocd

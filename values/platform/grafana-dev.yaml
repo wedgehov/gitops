@@ -1,0 +1,12 @@
+# Overrides for the grafana helm chart for the 'dev' environment
+
+# Reference the manually created secret for the admin password
+admin:
+  existingSecret: grafana-admin-secret
+  passwordKey: admin-password
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  hosts:
+    - grafana.dev.serit.dev
