@@ -1,0 +1,10 @@
+grafana:
+  # Use the existing grafana secret for admin credentials
+  admin:
+    existingSecret: "kube-prometheus-stack-grafana"
+
+  ingress:
+    enabled: true
+    ingressClassName: "nginx" # Make sure this matches your Ingress Controller
+    hosts:
+      - grafana.dev.vegard.io
