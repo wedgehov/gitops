@@ -20,7 +20,10 @@ bootstrap:
 	# 3. Apply the rendered Argo CD manifests to install or upgrade Argo CD.
 	#    This is an imperative step to get the system started or to upgrade the controller itself.
 	@kubectl apply -n argocd -f rendered-manifests/dev/platform/argocd/rendered.yaml
-	# 4. Apply all bootstrap resources
+	@echo "--> Applying Argo CD Controller RBAC..."
+	# 4. Grant the Argo CD controller cluster-admin rights to manage applications.
+	@kubectl apply -f bootstrap/argocd-controller-clusterrolebinding.yaml
+	# 5. Apply all bootstrap resources
 	@echo "--> Applying bootstrap ApplicationSet..."
 	@kubectl apply -n argocd -f bootstrap/
 
