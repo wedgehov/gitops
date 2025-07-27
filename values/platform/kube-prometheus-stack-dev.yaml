@@ -7,4 +7,4 @@ grafana:
     enabled: true
     ingressClassName: "nginx" # Make sure this matches your Ingress Controller
     hosts:
-      - grafana.dev.vegard.io
+      - grafana-dev.serit.dev

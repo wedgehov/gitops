@@ -167,114 +167,53 @@ Because Argo CD is managed by itself as a child application, upgrading it is a s
 4.  The `root` app will see that the `argocd` child application is out of sync and will automatically sync it, performing the upgrade.
 
 ## Day-to-Day Workflow
-
-### Updating an Existing Application
-
-1.  **Modify**: Make changes to the application's chart in `charts/` or its configuration in the relevant `values/` file.
-2.  **Render**: Run `just render-all-dev` (or the specific command, e.g., `just render-todo-app-dev`).
-3.  **Commit & Push**: Commit the changes along with the updated `rendered.yaml` file and push to Git.
-4.  **Sync**: Argo CD will automatically detect the change and sync your cluster. If you modified `bootstrap/root-app.yaml`, you must also run `just bootstrap` to apply the changes to the `ApplicationSet`.
-
-### Adding a New Application
-
-Let's say you want to add a new `blog-app` for the `dev` environment.
-
-1.  **Create Chart**: Copy `charts/todo-app` to `charts/blog-app` and modify its templates.
-2.  **Create Values**: Create `values/user/blog-app/dev.yaml` with its specific configuration (e.g., `ingress.host: blog.dev.vegard.io`).
-3.  **Update `justfile`**:
-    *   Add a `render-blog-app-dev` command.
-    *   Add `render-blog-app-dev` to the `render-all-dev` meta-command.
-4.  **Update ApplicationSet**: Add a new entry for `blog-app` to the `elements` list in `bootstrap/root-app.yaml`.
-    ~~~yaml
-    # ... existing elements ...
-    - name: blog-app-dev
-      path: rendered-manifests/dev/user/blog-app
-      namespace: blog-app-dev
-    ~~~
-5.  **Render, Commit, Push**: Run `just render-all-dev`, commit all the new and modified files, and push to Git.
-6.  **Apply to Cluster**: Run `just bootstrap` to apply the updated apply the updated `ApplicationSet`. Argo CD will then find and deploy your new blog application.
-
-## Adding a New Platform Application (from a public chart)
-
-Let’s say you want to add **Grafana** for monitoring.
-
----
-
-### 1 · Create the Secret manually  
-
-If the application needs credentials, create the secret first:
-
-```bash
-kubectl create ns monitoring
-
-kubectl create secret generic grafana-admin-secret \
-  --from-literal=admin-password='YOUR_SECURE_GRAFANA_PASSWORD' \
-  -n monitoring
-````
-
----
-
-### 2 · Create a values file
-
-Save this as **`values/platform/grafana-dev.yaml`**:
-
-```yaml
-# values/platform/grafana-dev.yaml
-
-# Reference the manually created secret for the admin password
-admin:
-  existingSecret: grafana-admin-secret
-  passwordKey: admin-password
-
-ingress:
-  enabled: true
-  ingressClassName: nginx
-  hosts:
-    - grafana.dev.vegard.io
-
-# … other Grafana values …
-```
-
----
-
-### 3 · Update `justfile`
-
-Add a render command for Grafana and include it in the `render-platform-dev` meta‑command.
-
----
-
-### 4 · Update the `ApplicationSet`
-
-Append a new element for Grafana in **`bootstrap/root-app.yaml`**:
-
-```yaml
-elements:
-  - name: grafana
-    namespace: monitoring
-    chart: grafana/grafana
-    valuesFile: values/platform/grafana-dev.yaml
-```
-
----
-
-### 5 · Render → Commit → Push
-
-```bash
-just render-all-dev
-git add .
-git commit -m "Add Grafana platform app"
-git push origin main
-```
-
----
-
-### 6 · Apply to the cluster
-
-```bash
-just bootstrap
-```
-
----
+ 
+ ### Updating an Existing Application
+ 
+ 1.  **Modify**: Make changes to the application's chart in `charts/` or its configuration in the relevant `values/` file.
+ 2.  **Render**: Run `just render-all-dev` (or the specific command, e.g., `just render-todo-app-dev`).
+ 3.  **Commit & Push**: Commit the changes along with the updated `rendered.yaml` file and push to Git.
+ 4.  **Sync**: Argo CD will automatically detect the change and sync your cluster.
+ 
+ ### Adding a New Application
+ 
+ This example shows how to add a new application (`blog-app`) that uses a **custom Helm chart** from the `charts/` directory.
+ 
+ 1.  **Create Chart**: Copy an existing chart (e.g., `charts/todo-app`) to `charts/blog-app` and modify its templates.
+ 2.  **Create Values**: Create `values/user/blog-app/dev.yaml` with its specific configuration (e.g., `ingress.host: blog.dev.vegard.io`).
+ 3.  **Update `justfile.sh`**:
+     *   Add a `render-blog-app-dev` command.
+     *   Add `render-blog-app-dev` to the `render-all-dev` meta-command.
+ 4.  **Update `ApplicationSet`**: Add a new entry for `blog-app` to the `elements` list in `bootstrap/root-app.yaml`.
+     ~~~yaml
+     # ... existing elements ...
+     - name: blog-app-dev
+       path: rendered-manifests/dev/user/blog-app
+       namespace: blog-app-dev
+     ~~~
+ 5.  **Render, Commit, Push**: Run `just render-all-dev`, then commit and push all the new and modified files.
+ 6.  **Apply to Cluster**: Run `just bootstrap` to apply the updated `ApplicationSet`. Argo CD will then find and deploy your new blog application.
+ 
+ ### Adding a New Platform Application (from a public chart)
+ 
+ This example shows how to add an application (`cert-manager`) that uses a **public Helm chart**.
+ 
+ 1.  **Create Values File**: Create a new values file at `values/platform/cert-manager-dev.yaml` to configure the public chart.
+ 
+ 2.  **Update `justfile.sh`**: Add a new render command that pulls the public chart and templates it with your custom values.
+     *   Add variables for the chart repository and version at the top.
+     *   Create a `render-cert-manager-dev` command.
+     *   Add the new command to the `render-all-dev` meta-command.
+ 
+ 3.  **Update `ApplicationSet`**: Add a new entry for `cert-manager` to the `elements` list in `bootstrap/root-app.yaml`.
+     ~~~yaml
+     # ... existing elements ...
+     - name: cert-manager
+       path: rendered-manifests/dev/platform/cert-manager
+       namespace: cert-manager
+     ~~~
+ 4.  **Render, Commit, Push**: Run `just render-all-dev`, then commit and push all the new and modified files.
+ 5.  **Apply to Cluster**: Run `just bootstrap` to apply the updated `ApplicationSet`.
 
 ## Path to True GitOps (TODO)
 
