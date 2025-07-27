@@ -14,16 +14,8 @@ spec:
       - name: cloudflare-tunnel
         path: rendered-manifests/dev/platform/cloudflare-tunnel
         namespace: cloudflared
-      - name: grafana
-        path: rendered-manifests/dev/platform/grafana
-        namespace: monitoring
-      - name: prometheus-crds
-        path: rendered-manifests/dev/platform/prometheus-crds
-        namespace: monitoring
-        # Use a sync-wave to ensure CRDs are created before the main stack.
-        wave: "-1"
-      - name: prometheus-stack
-        path: rendered-manifests/dev/platform/prometheus-stack
+      - name: kube-prometheus-stack
+        path: rendered-manifests/dev/platform/kube-prometheus-stack
         namespace: monitoring
       # User Applications
       - name: todo-app-dev
@@ -41,9 +33,9 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/wedgehov/gitops.git
-        targetRevision: HEAD
-        # The path for the rendered manifests comes from the 'path' field in the elements list.
+        repoURL: 'https://github.com/wedgehov/gitops.git'
+        targetRevision: 'HEAD'
+        # The path to the rendered manifests for each application.
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
