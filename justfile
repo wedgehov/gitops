@@ -13,11 +13,14 @@ bootstrap:
 	@echo "--> Ensuring argocd namespace exists..."
 	# 1. Ensure the argocd namespace exists. This is safe to run multiple times.
 	@kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+	@echo "--> Ensuring monitoring namespace exists with correct labels..."
+	# 2. Pre-create the monitoring namespace with the correct Pod Security labels to avoid race conditions.
+	@kubectl apply -f static-manifests/platform/monitoring-namespace.yaml
 	@echo "--> Applying Argo CD manifests..."
-	# 2. Apply the rendered Argo CD manifests to install or upgrade Argo CD.
+	# 3. Apply the rendered Argo CD manifests to install or upgrade Argo CD.
 	#    This is an imperative step to get the system started or to upgrade the controller itself.
 	@kubectl apply -n argocd -f rendered-manifests/dev/platform/argocd/rendered.yaml
-	# 3. Apply all bootstrap resources
+	# 4. Apply all bootstrap resources
 	@echo "--> Applying bootstrap ApplicationSet..."
 	@kubectl apply -n argocd -f bootstrap/
 
@@ -30,13 +33,9 @@ render-platform-dev:
 render-kube-prometheus-stack-dev:
 	mkdir -p rendered-manifests/dev/platform/kube-prometheus-stack
 	helm repo add prometheus-community {{PROMETHEUS_HELM_REPO}} --force-update
-	# Combine the static namespace manifest and the Helm chart into a single file.
-	# This ensures the namespace with the correct Pod Security labels exists before its resources are applied.
-	{ \
-		cat ./static-manifests/platform/monitoring-namespace.yaml; \
-		echo "---"; \
-		helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring --include-crds -f ./values/platform/kube-prometheus-stack-dev.yaml; \
-	} > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
+	# Render the chart from the public repository using our custom values, and output to the rendered-manifests directory.
+	# The namespace is now created during the 'bootstrap' step.
+	helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring --include-crds -f ./values/platform/kube-prometheus-stack-dev.yaml > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
 	echo "Rendered kube-prometheus-stack for dev."
 
 render-argocd-dev:
