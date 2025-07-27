@@ -92,6 +92,7 @@ This is the one-time process to set up a new cluster and connect it to this GitO
 *   `kubectl` configured to point to your target cluster.
 *   `just` installed (`brew install just` or similar).
 *   The Nutanix CSI driver must be manually installed on the cluster for Persistent Volume Claims to work.
+*   An Ingress controller (like NGINX) must be installed and configured on the cluster. The `kube-prometheus-stack` values file assumes an `ingressClassName` of `nginx`.
 
 ### Manual Dependencies (The "Almost" in GitOps)
 
