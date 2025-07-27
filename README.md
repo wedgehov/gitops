@@ -110,6 +110,16 @@ This repository follows GitOps principles, but with a few exceptions that make i
           -n todo-app-dev
         ~~~
 
+    *   **Example: Creating the Grafana admin secret for `kube-prometheus-stack`**:
+        ~~~bash
+        # Note: The namespace (e.g., monitoring) must exist first.
+        # The 'just bootstrap' command handles this.
+        kubectl create secret generic kube-prometheus-stack-grafana \
+          --from-literal=admin-user=admin \
+          --from-literal=admin-password='YOUR_SECURE_GRAFANA_PASSWORD' \
+          -n monitoring
+        ~~~
+
     *   **Example: Creating the Cloudflare Tunnel secret**:
         ~~~bash
         # Ensure the cloudflared namespace exists
