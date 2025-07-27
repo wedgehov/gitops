@@ -38,13 +38,10 @@ render-platform-dev:
 
 # Install Prometheus CRDs imperatively. This is a prerequisite for the monitoring stack.
 install-prometheus-crds:
-	@echo "--> Fetching kube-prometheus-stack chart to extract CRDs..."
-	@helm repo add prometheus-community {{PROMETHEUS_HELM_REPO}} --force-update
-	@helm pull prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --untar --untardir ./.tmp-charts
 	@echo "--> Applying CRDs to the cluster..."
-	@kubectl apply -f ./.tmp-charts/kube-prometheus-stack/crds/
-	@echo "--> Cleaning up temporary chart files..."
-	@rm -rf ./.tmp-charts
+	# Apply the CRDs from the local 'crds' directory, which are checked into Git.
+	# This makes the bootstrap process faster and more reliable.
+	@kubectl apply -f crds/prometheus/crds.yaml
 
 render-kube-prometheus-stack-dev:
 	mkdir -p rendered-manifests/dev/platform/kube-prometheus-stack

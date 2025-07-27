@@ -1,3 +1,7 @@
+# CRDs are installed separately during the bootstrap process, so we disable them here.
+crds:
+  enabled: false
+
 grafana:
   # Use the existing grafana secret for admin credentials
   admin:
