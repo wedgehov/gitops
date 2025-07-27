@@ -19,8 +19,8 @@ bootstrap:
 	# 2. Apply the rendered Argo CD manifests to install or upgrade Argo CD itself.
 	#    This is the one-time imperative step to get the system started.
 	@kubectl apply -n argocd -f rendered-manifests/dev/platform/argocd/rendered.yaml
-	# 3. Apply all bootstrap resources, including the ApplicationSet and its RBAC permissions.
-	@echo "--> Applying bootstrap ApplicationSet and RBAC..."
+	# 3. Apply all bootstrap resources
+	@echo "--> Applying bootstrap ApplicationSet..."
 	@kubectl apply -n argocd -f bootstrap/
 
 
