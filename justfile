@@ -21,7 +21,6 @@ bootstrap:
 	@echo "--> Applying bootstrap ApplicationSet..."
 	@kubectl apply -n argocd -f bootstrap/
 
-
 # Render platform components for the 'dev' environment
 render-platform-dev:
 	mkdir -p rendered-manifests/dev/platform/cloudflare-tunnel
@@ -31,8 +30,13 @@ render-platform-dev:
 render-kube-prometheus-stack-dev:
 	mkdir -p rendered-manifests/dev/platform/kube-prometheus-stack
 	helm repo add prometheus-community {{PROMETHEUS_HELM_REPO}} --force-update
-	# Render the chart from the public repository using our custom values, and output to the rendered-manifests directory.
-	helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring --include-crds -f ./values/platform/kube-prometheus-stack-dev.yaml > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
+	# Combine the static namespace manifest and the Helm chart into a single file.
+	# This ensures the namespace with the correct Pod Security labels exists before its resources are applied.
+	{ \
+		cat ./static-manifests/platform/monitoring-namespace.yaml; \
+		echo "---"; \
+		helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring --include-crds -f ./values/platform/kube-prometheus-stack-dev.yaml; \
+	} > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
 	echo "Rendered kube-prometheus-stack for dev."
 
 render-argocd-dev:
