@@ -13,6 +13,9 @@ bootstrap:
 	@echo "--> Ensuring argocd namespace exists..."
 	# 1. Ensure the argocd namespace exists. This is safe to run multiple times.
 	@kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+	@echo "--> Applying Prometheus CRDs..."
+	# 2. Apply the Prometheus CRDs imperatively. This is necessary before deploying the monitoring stack.
+	@just install-prometheus-crds
 	@echo "--> Ensuring monitoring namespace exists with correct labels..."
 	# 2. Pre-create the monitoring namespace with the correct Pod Security labels to avoid race conditions.
 	@kubectl apply -f static-manifests/platform/monitoring-namespace.yaml
@@ -33,12 +36,21 @@ render-platform-dev:
 	helm template cloudflare-tunnel ./charts/cloudflare-tunnel --namespace cloudflared -f ./values/platform/dev.yaml > ./rendered-manifests/dev/platform/cloudflare-tunnel/rendered.yaml
 	echo "Rendered cloudflare-tunnel for dev."
 
+# Install Prometheus CRDs imperatively. This is a prerequisite for the monitoring stack.
+install-prometheus-crds:
+	@echo "--> Fetching kube-prometheus-stack chart to extract CRDs..."
+	@helm repo add prometheus-community {{PROMETHEUS_HELM_REPO}} --force-update
+	@helm pull prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --untar --untardir ./.tmp-charts
+	@echo "--> Applying CRDs to the cluster..."
+	@kubectl apply -f ./.tmp-charts/kube-prometheus-stack/crds/
+	@echo "--> Cleaning up temporary chart files..."
+	@rm -rf ./.tmp-charts
+
 render-kube-prometheus-stack-dev:
 	mkdir -p rendered-manifests/dev/platform/kube-prometheus-stack
 	helm repo add prometheus-community {{PROMETHEUS_HELM_REPO}} --force-update
-	# Render the chart from the public repository using our custom values, and output to the rendered-manifests directory.
-	# The namespace is now created during the 'bootstrap' step.
-	helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring --include-crds -f ./values/platform/kube-prometheus-stack-dev.yaml > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
+	# Render the chart from the public repository using our custom values. CRDs are installed separately.
+	helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring -f ./values/platform/kube-prometheus-stack-dev.yaml > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
 	echo "Rendered kube-prometheus-stack for dev."
 
 render-argocd-dev:

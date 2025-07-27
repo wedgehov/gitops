@@ -13,5 +13,8 @@
 *.swp
 *.bak
 
+# Temporary directory for Helm charts
+.tmp-charts/
+
 # Prevent accidental commit of downloaded credentials
 *.json
