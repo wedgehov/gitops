@@ -11,7 +11,7 @@ metadata:
 data:
   # The key here will be the filename of the dashboard inside Grafana.
   todo-app.json: |-
-      {
+    {
       "annotations": {
         "list": [
           {
