@@ -12,3 +12,13 @@ grafana:
     ingressClassName: "nginx" # Make sure this matches your Ingress Controller
     hosts:
       - grafana-dev.serit.dev
+
+  # Configure grafana.ini settings to allow anonymous access.
+  # This is great for making dashboards publicly viewable without a login.
+  grafana.ini:
+    auth.anonymous:
+      enabled: true
+      # The organization name for anonymous users.
+      org_name: Main Org.
+      # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
+      org_role: Viewer
