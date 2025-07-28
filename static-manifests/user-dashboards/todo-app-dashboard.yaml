@@ -121,7 +121,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"todo-app-dev\", container!=\"\", container!=\"POD\"}[5m]))",
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace='todo-app-dev', container!='', container!='POD'}[5m]))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
