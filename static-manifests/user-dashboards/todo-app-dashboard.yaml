@@ -11,38 +11,7 @@ metadata:
 data:
   # The key here will be the filename of the dashboard inside Grafana.
   todo-app.json: |-
-    {
-      "__inputs": [
-        {
-          "name": "DS_PROMETHEUS",
-          "label": "Prometheus",
-          "description": "",
-          "type": "datasource",
-          "pluginId": "prometheus",
-          "pluginName": "Prometheus"
-        } 
-      ], 
-      "__elements": {},
-      "__requires": [
-        {
-          "type": "grafana",
-          "id": "grafana",
-          "name": "Grafana",
-          "version": "10.3.3"
-        },
-        {
-          "type": "datasource",
-          "id": "prometheus",
-          "name": "Prometheus",
-          "version": "1.0.0"
-        },
-        {
-          "type": "panel",
-          "id": "timeseries",
-          "name": "Time series",
-          "version": ""
-        }
-      ],
+      {
       "annotations": {
         "list": [
           {
@@ -69,7 +38,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -149,7 +118,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"todo-app-dev\"}[5m])) by (pod)\\n",
