@@ -40,8 +40,11 @@ render-platform-dev:
 install-prometheus-crds:
 	@echo "--> Applying CRDs to the cluster..."
 	# Apply the CRDs from the local 'crds' directory, which are checked into Git.
-	# This makes the bootstrap process faster and more reliable.
-	@kubectl apply -f crds/prometheus/crds.yaml
+	# We use --server-side to avoid the "Too long: may not be more than 262144 bytes"
+	# error on large CRD annotations. The --field-manager flag identifies this
+	# script as the owner of the fields. The --force-conflicts flag is used to
+	# take ownership from any previous client-side-apply operations.
+	@kubectl apply --server-side --force-conflicts --field-manager=bootstrap-script -f crds/prometheus/crds.yaml
 
 render-kube-prometheus-stack-dev:
 	mkdir -p rendered-manifests/dev/platform/kube-prometheus-stack
