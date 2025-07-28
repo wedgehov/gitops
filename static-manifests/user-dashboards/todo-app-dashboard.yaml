@@ -149,7 +149,7 @@ data:
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
-                "fillOpacity": 0,
+                "fillOpacity": 10,
                 "gradientMode": "none",
                 "hideFrom": {
                   "legend": false,
@@ -219,12 +219,12 @@ data:
               "editorMode": "code",
               "expr": "sum by (pod) (container_memory_working_set_bytes{namespace='todo-app-dev', container!='', container!='POD'})",
               "instant": false,
-              "legendFormat": "__auto",
+              "legendFormat": "{{pod}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Memory Usage",
+          "title": "Memory Usage (Working Set)",
           "type": "timeseries"
         },
         {
@@ -239,6 +239,88 @@ data:
               },
               "custom": {
                 "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 0
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "kubelet_volume_stats_used_bytes{namespace=\"todo-app-dev\", persistentvolumeclaim=\"db-data-todo-app-database-0\"}",
+              "instant": false,
+              "legendFormat": "{{persistentvolumeclaim}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "PostgreSQL Disk Usage",
           "type": "timeseries"
         }
       ],
@@ -254,7 +336,7 @@ data:
       },
       "timepicker": {},
       "timezone": "",
-      "title": "Todo App CPU Usage",
+      "title": "Todo App Dashboard",
       "uid": "cecb77c6-2b95-4153-9895-ac4367831031",
       "version": 1,
       "weekStart": ""
