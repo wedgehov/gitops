@@ -13,3 +13,21 @@ ingress:
 
 networkPolicy:
   enabled: true
+
+# Set resource requests and limits to ensure stable performance and prevent
+# the app from starving other processes on the node.
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+databaseResources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

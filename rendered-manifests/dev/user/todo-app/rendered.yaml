@@ -94,7 +94,12 @@ spec:
         ports:
         - containerPort: 8080
         resources:
-          {}
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
         readinessProbe:
           tcpSocket:
             port: 8080
@@ -166,7 +171,12 @@ spec:
         - containerPort: 5432
           name: postgres
         resources:
-          {}
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
         volumeMounts:
         - name: db-data
           mountPath: /var/lib/postgresql/data

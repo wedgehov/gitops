@@ -22,3 +22,15 @@ grafana:
       org_name: Main Org.
       # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
       org_role: Viewer
+
+# Tune down Prometheus resource usage for a smaller development cluster
+# to prevent it from destabilizing the control-plane nodes.
+prometheus:
+  prometheusSpec:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
