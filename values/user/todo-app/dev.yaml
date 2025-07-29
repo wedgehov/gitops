@@ -2,11 +2,11 @@
 
 frontend:
   image:
-    tag: "v1.0.7"
+    tag: "v1.0.8"
 
 backend:
   image:
-    tag: "v1.0.7"
+    tag: "v1.0.8"
 
 ingress:
   host: todo-app-dev.serit.dev # The final public hostname for this app

@@ -76,7 +76,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/todo-api:v1.0.7"
+        image: "ghcr.io/wedgehov/todo-api:v1.0.8"
         imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "-c"]
         args:
@@ -123,7 +123,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: "ghcr.io/wedgehov/todo-frontend:v1.0.7"
+        image: "ghcr.io/wedgehov/todo-frontend:v1.0.8"
         imagePullPolicy: IfNotPresent
         env:
         - name: API_URL
