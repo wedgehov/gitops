@@ -1,4 +1,13 @@
 # Overrides for the 'todo-app' in the 'dev' environment
+
+frontend:
+  image:
+    tag: "v1.0.7"
+
+backend:
+  image:
+    tag: "v1.0.7"
+
 ingress:
   host: todo-app-dev.serit.dev # The final public hostname for this app
 
