@@ -2,6 +2,25 @@
 crds:
   enabled: false
 
+# Ensure heavy monitoring components are scheduled only on worker nodes
+# by adding an affinity rule that avoids nodes with the control-plane role.
+prometheus:
+  prometheusSpec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+
 grafana:
   # Use the existing grafana secret for admin credentials
   admin:
@@ -12,6 +31,13 @@ grafana:
     ingressClassName: "nginx" # Make sure this matches your Ingress Controller
     hosts:
       - grafana-dev.serit.dev
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
 
   # Configure grafana.ini settings to allow anonymous access.
   # This is great for making dashboards publicly viewable without a login.
@@ -23,14 +49,12 @@ grafana:
       # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
       org_role: Viewer
 
-# Tune down Prometheus resource usage for a smaller development cluster
-# to prevent it from destabilizing the control-plane nodes.
-prometheus:
-  prometheusSpec:
-    resources:
-      requests:
-        cpu: 200m
-        memory: 512Mi
-      limits:
-        cpu: 500m
-        memory: 1Gi
+alertmanager:
+  alertmanagerSpec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist

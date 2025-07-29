@@ -1926,6 +1926,13 @@ spec:
             httpGet:
               path: /api/health
               port: 3000
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
       volumes:
         - name: config
           configMap:
@@ -2182,6 +2189,13 @@ spec:
     runAsUser: 1000
     seccompProfile:
       type: RuntimeDefault
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: DoesNotExist
   portName: http-web
 ---
 # Source: kube-prometheus-stack/templates/prometheus-operator/admission-webhooks/mutatingWebhookConfiguration.yaml
@@ -2302,6 +2316,13 @@ spec:
       release: "kube-prometheus-stack"
 
   scrapeConfigNamespaceSelector: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: DoesNotExist
   portName: http-web
   hostNetwork: false
 ---
@@ -6221,6 +6242,13 @@ metadata:
   namespace: monitoring
 spec:
   serviceAccountName: kube-prometheus-stack-grafana-test
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: DoesNotExist
   containers:
     - name: kube-prometheus-stack-test
       image: "docker.io/bats/bats:v1.4.1"
