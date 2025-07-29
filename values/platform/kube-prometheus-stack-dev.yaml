@@ -15,13 +15,6 @@ prometheus:
                   operator: DoesNotExist
     resources:
       requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-    resources:
-      requests:
         cpu: 200m
         memory: 512Mi
       limits:
@@ -65,3 +58,10 @@ alertmanager:
             - matchExpressions:
                 - key: node-role.kubernetes.io/control-plane
                   operator: DoesNotExist
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi

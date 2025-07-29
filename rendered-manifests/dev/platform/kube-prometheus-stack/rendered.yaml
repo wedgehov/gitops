@@ -2181,6 +2181,13 @@ spec:
   retention: "120h"
   alertmanagerConfigSelector: {}
   alertmanagerConfigNamespaceSelector: {}
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
   routePrefix: "/"
   securityContext:
     fsGroup: 2000
