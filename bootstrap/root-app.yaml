@@ -17,8 +17,10 @@ spec:
         path: rendered-manifests/dev/platform/external-secrets
         namespace: external-secrets
       - name: cluster-secret-store
+        type: static-file
         wave: "-7" # Deploy after the operator is running
-        path: static-manifests/platform/cluster-secret-store.yaml
+        dir: static-manifests/platform
+        file: cluster-secret-store.yaml
         namespace: external-secrets
       - name: cloudflare-tunnel
         wave: "0" # Deploy after core platform components
@@ -29,8 +31,10 @@ spec:
         path: rendered-manifests/dev/platform/kube-prometheus-stack
         namespace: monitoring
       - name: grafana-externalsecret
+        type: static-file
         wave: "0" # Create the secret after the store exists
-        path: static-manifests/platform/grafana-externalsecret.yaml
+        dir: static-manifests/platform
+        file: grafana-externalsecret.yaml
         namespace: monitoring
       - name: user-dashboards
         wave: "15" # Deploy dashboards after the apps themselves
@@ -43,8 +47,10 @@ spec:
         path: rendered-manifests/dev/user/todo-app
         namespace: todo-app-dev
       - name: todo-app-externalsecret
+        type: static-file
         wave: "10" # Create the secret alongside the app
-        path: static-manifests/user/todo-app-externalsecret.yaml
+        dir: static-manifests/user
+        file: todo-app-externalsecret.yaml
         namespace: todo-app-dev
   template:
     metadata:
@@ -60,8 +66,13 @@ spec:
       source:
         repoURL: 'https://github.com/wedgehov/gitops.git'
         targetRevision: 'HEAD'
-        # The path to the rendered manifests for each application.
-        path: '{{path}}'
+        {{- if eq .type "static-file" }}
+        path: '{{.dir}}'
+        directory:
+          include: '{{.file}}'
+        {{- else }}
+        path: '{{.path}}'
+        {{- end }}
       destination:
         server: https://kubernetes.default.svc
         # The destination namespace for the application's resources comes from the 'namespace' field.
