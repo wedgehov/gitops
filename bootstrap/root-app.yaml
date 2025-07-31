@@ -12,6 +12,14 @@ spec:
         wave: "-10" # Deploy ArgoCD first
         path: rendered-manifests/dev/platform/argocd
         namespace: argocd
+      - name: external-secrets
+        wave: "-8" # Deploy after ArgoCD but before apps that need secrets
+        path: rendered-manifests/dev/platform/external-secrets
+        namespace: external-secrets
+      - name: cluster-secret-store
+        wave: "-7" # Deploy after the operator is running
+        path: static-manifests/platform/cluster-secret-store.yaml
+        namespace: external-secrets
       - name: cloudflare-tunnel
         wave: "0" # Deploy after core platform components
         path: rendered-manifests/dev/platform/cloudflare-tunnel
@@ -19,6 +27,10 @@ spec:
       - name: kube-prometheus-stack
         wave: "-5" # Deploy after ArgoCD but before other apps
         path: rendered-manifests/dev/platform/kube-prometheus-stack
+        namespace: monitoring
+      - name: grafana-externalsecret
+        wave: "0" # Create the secret after the store exists
+        path: static-manifests/platform/grafana-externalsecret.yaml
         namespace: monitoring
       - name: user-dashboards
         wave: "15" # Deploy dashboards after the apps themselves
@@ -29,6 +41,10 @@ spec:
       - name: todo-app-dev
         wave: "10" # Deploy user apps last
         path: rendered-manifests/dev/user/todo-app
+        namespace: todo-app-dev
+      - name: todo-app-externalsecret
+        wave: "10" # Create the secret alongside the app
+        path: static-manifests/user/todo-app-externalsecret.yaml
         namespace: todo-app-dev
   template:
     metadata:

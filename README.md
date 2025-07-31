@@ -115,29 +115,20 @@ This repository follows GitOps principles, but with a few exceptions that make i
 
 2.  **Secrets**: All secrets are managed manually and are not stored in Git. Before bootstrapping, you must create the necessary secrets on the cluster.
 
-    *   **Example: Creating the PostgreSQL secret for `todo-app`**:
+    *   **1Password Service Account Token**: The External Secrets Operator (ESO) requires a Kubernetes secret containing a 1Password Service Account token to authenticate with the 1Password API. This is a **one-time manual step** per cluster.
         ~~~bash
-        # Note: The namespace (e.g., todo-app-dev) must exist first.
-        # The Argo CD Application manifest can create it with `syncOptions.CreateNamespace=true`.
-        kubectl create secret generic todo-app-db-secret \
-          --from-literal=postgres-password='YOUR_SECURE_DATABASE_PASSWORD' \
-          -n todo-app-dev
+        # The 'external-secrets' namespace is created by 'just bootstrap'
+        kubectl create secret generic onepassword-sa-token \
+          --from-literal=1password-token='YOUR_1PASSWORD_SERVICE_ACCOUNT_TOKEN' \
+          -n external-secrets
         ~~~
 
-    *   **Example: Creating the Grafana admin secret for `kube-prometheus-stack`**:
-        ~~~bash
-        # Note: The namespace (e.g., monitoring) must exist first.
-        # The 'just bootstrap' command handles this.
-        kubectl create secret generic kube-prometheus-stack-grafana \
-          --from-literal=admin-user=admin \
-          --from-literal=admin-password='YOUR_SECURE_GRAFANA_PASSWORD' \
-          -n monitoring
-        ~~~
+    *   **Application Secrets (Grafana, PostgreSQL)**: These are now managed declaratively. The `ExternalSecret` manifests in `static-manifests/` tell ESO to fetch the credentials from your `kubernetes-praksis` vault in 1Password and create the corresponding Kubernetes `Secret` objects. You no longer need to create them manually with `kubectl`.
 
     *   **Example: Creating the Cloudflare Tunnel secret**:
         ~~~bash
         # Ensure the cloudflared namespace exists
-        kubectl create ns cloudflared
+        # This is created by 'just bootstrap'
         # Create the secret from your downloaded JSON key file
         kubectl create secret generic cloudflared-tunnel-credentials \
           --from-file=credentials.json=/path/to/your/tunnel-credentials.json \
@@ -244,10 +235,9 @@ Because Argo CD is managed by itself as a child application, upgrading it is a s
 To evolve this repo into *true* GitOps—where Git is the single source of truth—several manual steps must be automated:
 
 1. **Declarative Secret Management**
-   Replace `kubectl create secret` with a Git‑friendly solution:
+   We have now implemented the **External Secrets Operator (ESO)** pattern for Grafana and PostgreSQL secrets. ESO watches `ExternalSecret` custom resources in Git and automatically creates (and syncs) native Kubernetes `Secret` resources from values stored securely in 1Password.
 
-   * **Sealed Secrets:** Kubernetes controller decrypts secrets that are stored *encrypted* in Git using the cluster’s public key.
-   * **External Secrets Operator (ESO):** Manifests reference secrets in AWS Secrets Manager, Azure Key Vault, HashiCorp Vault, etc.; ESO pulls them at runtime.
+   The remaining manual secret (Cloudflare Tunnel) can be migrated to this pattern next.
 
 2. **Declarative CSI Driver Management**
    The Nutanix CSI driver, currently a manual prerequisite, should be treated as a platform app: locate / author a Helm chart, then add it to the `ApplicationSet` so the entire storage layer is defined in Git as well.
