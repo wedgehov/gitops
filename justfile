@@ -8,7 +8,7 @@ EXTERNAL_SECRETS_CHART_VERSION := "0.9.9"
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-external-secrets-dev render-todo-app-dev
+render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-external-secrets-dev render-todo-app-dev render-fm-todo-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -76,3 +76,8 @@ render-todo-app-dev:
 	mkdir -p rendered-manifests/dev/user/todo-app
 	helm template todo-app ./charts/todo-app --namespace todo-app-dev -f ./values/user/todo-app/dev.yaml > ./rendered-manifests/dev/user/todo-app/rendered.yaml
 	echo "Rendered todo-app for dev."
+
+render-fm-todo-app-dev:
+	mkdir -p rendered-manifests/dev/user/fm-todo-app
+	helm template fm-todo-app-dev ./charts/fm-todo-app --namespace fm-todo-app-dev -f ./values/user/fm-todo-app/dev.yaml > ./rendered-manifests/dev/user/fm-todo-app/rendered.yaml
+	echo "Rendered fm-todo-app for dev."

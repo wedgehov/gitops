@@ -52,6 +52,16 @@ spec:
         dir: static-manifests/user
         file: todo-app-externalsecret.yaml
         namespace: todo-app-dev
+      - name: fm-todo-app-dev
+        wave: "10" # Deploy user apps last
+        path: rendered-manifests/dev/user/fm-todo-app
+        namespace: fm-todo-app-dev
+      - name: fm-todo-app-externalsecret
+        type: static-file
+        wave: "10" # Create the secret alongside the app
+        dir: static-manifests/user
+        file: fm-todo-app-externalsecret.yaml
+        namespace: fm-todo-app-dev
   template:
     metadata:
       # The name of the generated Application comes from the 'name' field in the elements list above.
@@ -66,12 +76,10 @@ spec:
       source:
         repoURL: 'https://github.com/wedgehov/gitops.git'
         targetRevision: 'HEAD'
+        path: '{{- if eq .type "static-file" }}{{.dir}}{{- else }}{{.path}}{{- end }}'
         {{- if eq .type "static-file" }}
-        path: '{{.dir}}'
         directory:
           include: '{{.file}}'
-        {{- else }}
-        path: '{{.path}}'
         {{- end }}
       destination:
         server: https://kubernetes.default.svc
