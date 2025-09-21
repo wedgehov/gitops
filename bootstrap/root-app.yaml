@@ -12,16 +12,6 @@ spec:
         wave: "-10" # Deploy ArgoCD first
         path: rendered-manifests/dev/platform/argocd
         namespace: argocd
-      - name: external-secrets
-        wave: "-8" # Deploy after ArgoCD but before apps that need secrets
-        path: rendered-manifests/dev/platform/external-secrets
-        namespace: external-secrets
-      - name: cluster-secret-store
-        type: static-file
-        wave: "-7" # Deploy after the operator is running
-        dir: static-manifests/platform
-        file: cluster-secret-store.yaml
-        namespace: external-secrets
       - name: cloudflare-tunnel
         wave: "0" # Deploy after core platform components
         path: rendered-manifests/dev/platform/cloudflare-tunnel
@@ -29,12 +19,6 @@ spec:
       - name: kube-prometheus-stack
         wave: "-5" # Deploy after ArgoCD but before other apps
         path: rendered-manifests/dev/platform/kube-prometheus-stack
-        namespace: monitoring
-      - name: grafana-externalsecret
-        type: static-file
-        wave: "0" # Create the secret after the store exists
-        dir: static-manifests/platform
-        file: grafana-externalsecret.yaml
         namespace: monitoring
       - name: user-dashboards
         wave: "15" # Deploy dashboards after the apps themselves
@@ -46,22 +30,6 @@ spec:
         wave: "10" # Deploy user apps last
         path: rendered-manifests/dev/user/todo-app
         namespace: todo-app-dev
-      - name: todo-app-externalsecret
-        type: static-file
-        wave: "10" # Create the secret alongside the app
-        dir: static-manifests/user
-        file: todo-app-externalsecret.yaml
-        namespace: todo-app-dev
-      - name: fm-todo-app-dev
-        wave: "10" # Deploy user apps last
-        path: rendered-manifests/dev/user/fm-todo-app
-        namespace: fm-todo-app-dev
-      - name: fm-todo-app-externalsecret
-        type: static-file
-        wave: "10" # Create the secret alongside the app
-        dir: static-manifests/user
-        file: fm-todo-app-externalsecret.yaml
-        namespace: fm-todo-app-dev
   template:
     metadata:
       # The name of the generated Application comes from the 'name' field in the elements list above.
@@ -76,11 +44,8 @@ spec:
       source:
         repoURL: 'https://github.com/wedgehov/gitops.git'
         targetRevision: 'HEAD'
-        path: '{{- if eq .type "static-file" }}{{.dir}}{{- else }}{{.path}}{{- end }}'
-        {{- if eq .type "static-file" }}
-        directory:
-          include: '{{.file}}'
-        {{- end }}
+        # The path to the rendered manifests for each application.
+        path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
         # The destination namespace for the application's resources comes from the 'namespace' field.

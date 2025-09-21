@@ -2,13 +2,11 @@
 ARGOCD_HELM_REPO := "https://argoproj.github.io/argo-helm"
 ARGOCD_CHART_VERSION := "5.51.5"
 PROMETHEUS_HELM_REPO := "https://prometheus-community.github.io/helm-charts"
-PROMETHEUS_CHART_VERSION := "57.0.2" # A recent, stable version
-EXTERNAL_SECRETS_HELM_REPO := "https://charts.external-secrets.io"
-EXTERNAL_SECRETS_CHART_VERSION := "0.9.9"
+PROMETHEUS_CHART_VERSION := "57.0.1" # A recent, stable version
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-external-secrets-dev render-todo-app-dev render-fm-todo-app-dev
+render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-todo-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -21,9 +19,6 @@ bootstrap:
 	@echo "--> Ensuring monitoring namespace exists with correct labels..."
 	# 2. Pre-create the monitoring namespace with the correct Pod Security labels to avoid race conditions.
 	@kubectl apply -f static-manifests/platform/monitoring-namespace.yaml
-	@echo "--> Ensuring external-secrets namespace exists..."
-	# 3. Pre-create the external-secrets namespace.
-	@kubectl apply -f static-manifests/platform/external-secrets-namespace.yaml
 	@echo "--> Applying Argo CD manifests..."
 	# 3. Apply the rendered Argo CD manifests to install or upgrade Argo CD.
 	#    This is an imperative step to get the system started or to upgrade the controller itself.
@@ -58,13 +53,6 @@ render-kube-prometheus-stack-dev:
 	helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring -f ./values/platform/kube-prometheus-stack-dev.yaml > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
 	echo "Rendered kube-prometheus-stack for dev."
 
-render-external-secrets-dev:
-	mkdir -p rendered-manifests/dev/platform/external-secrets
-	helm repo add external-secrets {{EXTERNAL_SECRETS_HELM_REPO}} --force-update
-	# Render the chart from the public repository using our custom values.
-	helm template external-secrets external-secrets/external-secrets --version {{EXTERNAL_SECRETS_CHART_VERSION}} --namespace external-secrets -f ./values/platform/external-secrets-dev.yaml > ./rendered-manifests/dev/platform/external-secrets/rendered.yaml
-	echo "Rendered external-secrets for dev."
-
 render-argocd-dev:
 	mkdir -p rendered-manifests/dev/platform/argocd
 	helm repo add argo {{ARGOCD_HELM_REPO}} --force-update
@@ -76,8 +64,3 @@ render-todo-app-dev:
 	mkdir -p rendered-manifests/dev/user/todo-app
 	helm template todo-app ./charts/todo-app --namespace todo-app-dev -f ./values/user/todo-app/dev.yaml > ./rendered-manifests/dev/user/todo-app/rendered.yaml
 	echo "Rendered todo-app for dev."
-
-render-fm-todo-app-dev:
-	mkdir -p rendered-manifests/dev/user/fm-todo-app
-	helm template fm-todo-app-dev ./charts/fm-todo-app --namespace fm-todo-app-dev -f ./values/user/fm-todo-app/dev.yaml > ./rendered-manifests/dev/user/fm-todo-app/rendered.yaml
-	echo "Rendered fm-todo-app for dev."
