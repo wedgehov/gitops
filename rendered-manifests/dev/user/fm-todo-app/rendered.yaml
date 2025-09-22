@@ -8,7 +8,7 @@ spec:
   # This policy applies to pods with the 'database' label
   podSelector:
     matchLabels:
-      app: fm-todo-app-database-v2
+      app: fm-todo-app-db
   policyTypes:
   - Ingress
   ingress:
@@ -39,13 +39,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fm-todo-app-database-v2
+  name: fm-todo-app-db
 spec:
   ports:
     - port: 5432
   clusterIP: None
   selector:
-    app: fm-todo-app-database-v2
+    app: fm-todo-app-db
 ---
 # Source: fm-todo-app/templates/frontend-deployment.yaml
 apiVersion: v1
@@ -80,7 +80,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
-          value: "Host=fm-todo-app-database-v2;Port=5432;Database=fm_todo_db;Username=todo_user;Password=$(POSTGRES_PASSWORD)"
+          value: "Host=fm-todo-app-db;Port=5432;Database=fm_todo_db;Username=todo_user;Password=$(POSTGRES_PASSWORD)"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -134,17 +134,17 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: fm-todo-app-database-v2
+  name: fm-todo-app-db
 spec:
-  serviceName: fm-todo-app-database-v2
+  serviceName: fm-todo-app-db
   replicas: 1
   selector:
     matchLabels:
-      app: fm-todo-app-database-v2
+      app: fm-todo-app-db
   template:
     metadata:
       labels:
-        app: fm-todo-app-database-v2
+        app: fm-todo-app-db
     spec:
       terminationGracePeriodSeconds: 30
       containers:

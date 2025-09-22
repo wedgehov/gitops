@@ -7,7 +7,7 @@ spec:
   # This policy applies to pods with the 'database' label
   podSelector:
     matchLabels:
-      app: {{ .Release.Name }}-database-v2
+      app: {{ .Release.Name }}-db
   policyTypes:
   - Ingress
   ingress:

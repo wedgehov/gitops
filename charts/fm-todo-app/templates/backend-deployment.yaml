@@ -30,7 +30,7 @@ spec:
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
         env:
         - name: ConnectionStrings__DefaultConnection
-          value: "Host={{ .Release.Name }}-database-v2;Port=5432;Database={{ .Values.database.dbName }};Username={{ .Values.database.user }};Password=$(POSTGRES_PASSWORD)"
+          value: "Host={{ .Release.Name }}-db;Port=5432;Database={{ .Values.database.dbName }};Username={{ .Values.database.user }};Password=$(POSTGRES_PASSWORD)"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
