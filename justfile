@@ -6,7 +6,7 @@ PROMETHEUS_CHART_VERSION := "57.0.1" # A recent, stable version
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-todo-app-dev
+render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-todo-app-dev render-tip-calculator-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -64,3 +64,8 @@ render-todo-app-dev:
 	mkdir -p rendered-manifests/dev/user/todo-app
 	helm template todo-app ./charts/todo-app --namespace todo-app-dev -f ./values/user/todo-app/dev.yaml > ./rendered-manifests/dev/user/todo-app/rendered.yaml
 	echo "Rendered todo-app for dev."
+
+render-tip-calculator-app-dev:
+	mkdir -p rendered-manifests/dev/user/tip-calculator-app
+	helm template tip-calculator-app ./charts/tip-calculator-app --namespace tip-calculator-app-dev -f ./values/user/tip-calculator-app/dev.yaml > ./rendered-manifests/dev/user/tip-calculator-app/rendered.yaml
+	echo "Rendered tip-calculator-app for dev."

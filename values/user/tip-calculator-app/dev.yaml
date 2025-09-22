@@ -1,0 +1,16 @@
+# Overrides for the 'tip-calculator-app' in the 'dev' environment
+
+image:
+  tag: "v1.0.0"
+
+ingress:
+  host: tip-calculator-dev.serit.dev
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+

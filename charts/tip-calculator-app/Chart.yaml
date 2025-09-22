@@ -1,0 +1,7 @@
+apiVersion: v2
+name: tip-calculator-app
+description: A Helm chart for the Tip Calculator App
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
