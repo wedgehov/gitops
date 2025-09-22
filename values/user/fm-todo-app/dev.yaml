@@ -2,11 +2,11 @@
 
 frontend:
   image:
-    tag: "v1.0.0"
+    tag: "v1.0.1"
 
 backend:
   image:
-    tag: "v1.0.0"
+    tag: "v1.0.1"
 
 ingress:
   host: fm-todo-app-dev.serit.dev
@@ -23,4 +23,3 @@ databaseResources:
   requests:
     cpu: 100m
     memory: 256Mi
-
