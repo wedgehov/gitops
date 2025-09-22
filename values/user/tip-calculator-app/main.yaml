@@ -2,6 +2,7 @@
 
 image:
   tag: "latest"
+  pullPolicy: Always
 
 ingress:
   host: tip-calculator-dev-main.serit.dev

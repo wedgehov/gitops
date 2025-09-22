@@ -2,10 +2,12 @@
 
 frontend:
   image:
+    pullPolicy: Always
     tag: "latest"
 
 backend:
   image:
+    pullPolicy: Always
     tag: "latest"
 
 ingress:
