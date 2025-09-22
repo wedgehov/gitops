@@ -6,7 +6,7 @@ PROMETHEUS_CHART_VERSION := "57.0.1" # A recent, stable version
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev
+render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -74,3 +74,13 @@ render-fm-todo-app-dev:
 	mkdir -p rendered-manifests/dev/user/fm-todo-app
 	helm template fm-todo-app ./charts/fm-todo-app --namespace fm-todo-app-dev -f ./values/user/fm-todo-app/dev.yaml > ./rendered-manifests/dev/user/fm-todo-app/rendered.yaml
 	echo "Rendered fm-todo-app for dev."
+
+render-tip-calculator-app-main:
+	mkdir -p rendered-manifests/main/user/tip-calculator-app
+	helm template tip-calculator-app-main ./charts/tip-calculator-app --namespace tip-calculator-app-main -f ./values/user/tip-calculator-app/main.yaml > ./rendered-manifests/main/user/tip-calculator-app/rendered.yaml
+	echo "Rendered tip-calculator-app for main."
+
+render-fm-todo-app-main:
+	mkdir -p rendered-manifests/main/user/fm-todo-app
+	helm template fm-todo-app-main ./charts/fm-todo-app --namespace fm-todo-app-main -f ./values/user/fm-todo-app/main.yaml > ./rendered-manifests/main/user/fm-todo-app/rendered.yaml
+	echo "Rendered fm-todo-app for main."

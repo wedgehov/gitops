@@ -38,6 +38,15 @@ spec:
         wave: "10" # Deploy user apps last
         path: rendered-manifests/dev/user/fm-todo-app
         namespace: fm-todo-app-dev
+      # User Applications from 'main' branch
+      - name: tip-calculator-app-main
+        wave: "11"
+        path: rendered-manifests/main/user/tip-calculator-app
+        namespace: tip-calculator-app-main
+      - name: fm-todo-app-main
+        wave: "11"
+        path: rendered-manifests/main/user/fm-todo-app
+        namespace: fm-todo-app-main
   template:
     metadata:
       # The name of the generated Application comes from the 'name' field in the elements list above.

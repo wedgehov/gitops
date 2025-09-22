@@ -1,0 +1,191 @@
+---
+# Source: fm-todo-app/templates/network-policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: fm-todo-app-main-db-access
+spec:
+  # This policy applies to pods with the 'database' label
+  podSelector:
+    matchLabels:
+      app: fm-todo-app-main-db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    # 1. Only allow traffic from pods with the 'backend' label
+    - podSelector:
+        matchLabels:
+          app: fm-todo-app-main-backend
+    ports:
+    # 2. Only allow traffic on the PostgreSQL port
+    - protocol: TCP
+      port: 5432
+---
+# Source: fm-todo-app/templates/backend-deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fm-todo-app-main-backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: fm-todo-app-main-backend
+---
+# Source: fm-todo-app/templates/database-statefulset.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fm-todo-app-main-db
+spec:
+  ports:
+    - port: 5432
+  clusterIP: None
+  selector:
+    app: fm-todo-app-main-db
+---
+# Source: fm-todo-app/templates/frontend-deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fm-todo-app-main-frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: fm-todo-app-main-frontend
+---
+# Source: fm-todo-app/templates/backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fm-todo-app-main-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fm-todo-app-main-backend
+  template:
+    metadata:
+      labels:
+        app: fm-todo-app-main-backend
+    spec:
+      containers:
+      - name: backend
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:latest"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=fm-todo-app-main-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+        envFrom:
+        - secretRef:
+            name: fm-todo-app-db-secret
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+# Source: fm-todo-app/templates/frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fm-todo-app-main-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fm-todo-app-main-frontend
+  template:
+    metadata:
+      labels:
+        app: fm-todo-app-main-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend:latest"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: API_URL
+          value: "http://fm-todo-app-main-backend:8080"
+        ports:
+        - containerPort: 80
+---
+# Source: fm-todo-app/templates/database-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fm-todo-app-main-db
+spec:
+  serviceName: fm-todo-app-main-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fm-todo-app-main-db
+  template:
+    metadata:
+      labels:
+        app: fm-todo-app-main-db
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: database
+        image: "postgres:16-alpine"
+        envFrom:
+        - secretRef:
+            name: fm-todo-app-db-secret
+        ports:
+        - containerPort: 5432
+          name: postgres
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: db-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: nutanix-volume
+      resources:
+        requests:
+          storage: 1Gi
+---
+# Source: fm-todo-app/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fm-todo-app-main-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "fm-todo-app-dev-main.serit.dev"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fm-todo-app-main-frontend
+            port:
+              number: 80

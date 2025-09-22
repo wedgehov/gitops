@@ -1,0 +1,25 @@
+# Overrides for the 'fm-todo-app' from the 'main' branch
+
+frontend:
+  image:
+    tag: "latest"
+
+backend:
+  image:
+    tag: "latest"
+
+ingress:
+  host: fm-todo-app-dev-main.serit.dev
+
+networkPolicy:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+databaseResources:
+  requests:
+    cpu: 100m
+    memory: 256Mi

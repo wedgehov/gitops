@@ -1,0 +1,15 @@
+# Overrides for the 'tip-calculator-app' from the 'main' branch
+
+image:
+  tag: "latest"
+
+ingress:
+  host: tip-calculator-dev-main.serit.dev
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
