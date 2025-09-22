@@ -1,0 +1,39 @@
+# Default values for fm-todo-app.
+
+replicaCount: 1
+
+frontend:
+  image:
+    repository: ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend
+    pullPolicy: IfNotPresent
+    tag: "" # This will be overridden by environment-specific values
+
+backend:
+  image:
+    repository: ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend
+    pullPolicy: IfNotPresent
+    tag: "" # This will be overridden by environment-specific values
+
+database:
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  storage: 1Gi
+  user: todo_user
+  dbName: fm_todo_db
+  secretName: fm-todo-app-db-secret
+  passwordKey: postgres-password
+
+ingress:
+  enabled: true
+  className: nginx
+  host: fm-todo-app.example.com # A generic placeholder
+
+resources: {}
+databaseResources: {}
+
+networkPolicy:
+  enabled: false # Set to true in environment values to enable
+
+storageClassName: nutanix-volume
+
