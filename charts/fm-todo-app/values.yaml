@@ -19,10 +19,7 @@ database:
     repository: postgres
     tag: "16-alpine"
   storage: 1Gi
-  user: todo_user
-  dbName: fm_todo_db
   secretName: fm-todo-app-db-secret
-  passwordKey: postgres-password
 
 ingress:
   enabled: true
@@ -36,4 +33,3 @@ networkPolicy:
   enabled: false # Set to true in environment values to enable
 
 storageClassName: nutanix-volume
-
