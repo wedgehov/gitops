@@ -74,12 +74,6 @@ spec:
       labels:
         app: fm-todo-app-backend
     spec:
-      initContainers:
-      - name: wait-for-db
-        image: busybox:1.36
-        # This command will repeatedly try to resolve the database's hostname.
-        # It will only succeed and exit once the database service is up and has a ready pod.
-        command: ['sh', '-c', 'until nslookup fm-todo-app-database-v2; do echo "waiting for database..."; sleep 2; done;']
       containers:
       - name: backend
         image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:v1.0.1"
