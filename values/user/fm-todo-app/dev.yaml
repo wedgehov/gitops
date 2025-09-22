@@ -2,11 +2,11 @@
 
 frontend:
   image:
-    tag: "v1.0.1"
+    tag: "v1.0.2"
 
 backend:
   image:
-    tag: "v1.0.1"
+    tag: "v1.0.2"
 
 ingress:
   host: fm-todo-app-dev.serit.dev

@@ -76,7 +76,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:v1.0.1"
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:v1.0.2"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
@@ -120,7 +120,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend:v1.0.1"
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend:v1.0.2"
         imagePullPolicy: IfNotPresent
         env:
         - name: API_URL
