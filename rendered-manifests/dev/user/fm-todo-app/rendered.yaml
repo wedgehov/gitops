@@ -8,7 +8,7 @@ spec:
   # This policy applies to pods with the 'database' label
   podSelector:
     matchLabels:
-      app: fm-todo-app-database
+      app: fm-todo-app-database-v2
   policyTypes:
   - Ingress
   ingress:
@@ -39,13 +39,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fm-todo-app-database
+  name: fm-todo-app-database-v2
 spec:
   ports:
     - port: 5432
   clusterIP: None
   selector:
-    app: fm-todo-app-database
+    app: fm-todo-app-database-v2
 ---
 # Source: fm-todo-app/templates/frontend-deployment.yaml
 apiVersion: v1
@@ -79,14 +79,14 @@ spec:
         image: busybox:1.36
         # This command will repeatedly try to resolve the database's hostname.
         # It will only succeed and exit once the database service is up and has a ready pod.
-        command: ['sh', '-c', 'until nslookup fm-todo-app-database; do echo "waiting for database..."; sleep 2; done;']
+        command: ['sh', '-c', 'until nslookup fm-todo-app-database-v2; do echo "waiting for database..."; sleep 2; done;']
       containers:
       - name: backend
         image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:v1.0.1"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
-          value: "Host=fm-todo-app-database;Port=5432;Database=fm_todo_db;Username=todo_user;Password=$(POSTGRES_PASSWORD)"
+          value: "Host=fm-todo-app-database-v2;Port=5432;Database=fm_todo_db;Username=todo_user;Password=$(POSTGRES_PASSWORD)"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -140,17 +140,17 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: fm-todo-app-database
+  name: fm-todo-app-database-v2
 spec:
-  serviceName: fm-todo-app-database
+  serviceName: fm-todo-app-database-v2
   replicas: 1
   selector:
     matchLabels:
-      app: fm-todo-app-database
+      app: fm-todo-app-database-v2
   template:
     metadata:
       labels:
-        app: fm-todo-app-database
+        app: fm-todo-app-database-v2
     spec:
       terminationGracePeriodSeconds: 30
       containers:

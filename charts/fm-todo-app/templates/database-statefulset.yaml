@@ -1,28 +1,28 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-database
+  name: {{ .Release.Name }}-database-v2
 spec:
   ports:
     - port: 5432
   clusterIP: None
   selector:
-    app: {{ .Release.Name }}-database
+    app: {{ .Release.Name }}-database-v2
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-database
+  name: {{ .Release.Name }}-database-v2
 spec:
-  serviceName: {{ .Release.Name }}-database
+  serviceName: {{ .Release.Name }}-database-v2
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-database
+      app: {{ .Release.Name }}-database-v2
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-database
+        app: {{ .Release.Name }}-database-v2
     spec:
       terminationGracePeriodSeconds: 30
       containers:
@@ -55,4 +55,3 @@ spec:
       resources:
         requests:
           storage: {{ .Values.database.storage }}
-

@@ -29,14 +29,14 @@ spec:
         image: busybox:1.36
         # This command will repeatedly try to resolve the database's hostname.
         # It will only succeed and exit once the database service is up and has a ready pod.
-        command: ['sh', '-c', 'until nslookup {{ .Release.Name }}-database; do echo "waiting for database..."; sleep 2; done;']
+        command: ['sh', '-c', 'until nslookup {{ .Release.Name }}-database-v2; do echo "waiting for database..."; sleep 2; done;']
       containers:
       - name: backend
         image: "{{ .Values.backend.image.repository }}:{{ required "A value for backend.image.tag is required" .Values.backend.image.tag }}"
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
         env:
         - name: ConnectionStrings__DefaultConnection
-          value: "Host={{ .Release.Name }}-database;Port=5432;Database={{ .Values.database.dbName }};Username={{ .Values.database.user }};Password=$(POSTGRES_PASSWORD)"
+          value: "Host={{ .Release.Name }}-database-v2;Port=5432;Database={{ .Values.database.dbName }};Username={{ .Values.database.user }};Password=$(POSTGRES_PASSWORD)"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:

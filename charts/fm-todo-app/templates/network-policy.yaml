@@ -7,7 +7,7 @@ spec:
   # This policy applies to pods with the 'database' label
   podSelector:
     matchLabels:
-      app: {{ .Release.Name }}-database
+      app: {{ .Release.Name }}-database-v2
   policyTypes:
   - Ingress
   ingress:
@@ -21,4 +21,3 @@ spec:
     - protocol: TCP
       port: 5432
 {{- end }}
-
