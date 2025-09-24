@@ -213,6 +213,8 @@ metadata:
     # kube-prometheus-stack values.
     release: kube-prometheus-stack
 spec:
+  jobLabel: app
+spec:
   selector:
     matchLabels:
       app: fm-todo-app-backend
