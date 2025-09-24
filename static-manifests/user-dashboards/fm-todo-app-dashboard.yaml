@@ -111,7 +111,7 @@ data:
           },
           "pluginVersion": "10.3.3",
           "targets": [
-            { "datasource": { "type": "tempo", "uid": "tempo" }, "query": "{ service.name = \"fm-todo-app-backend\" }" }
+            { "datasource": { "type": "tempo", "uid": "tempo" }, "query": "{ .service.name = \"fm-todo-app-backend\" }" }
           ],
           "title": "Service Map",
           "type": "servicegraph"

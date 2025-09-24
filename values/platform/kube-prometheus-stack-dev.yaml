@@ -104,8 +104,15 @@ tempo:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: node-role.kubernetes.io/control-plane
-                  operator: DoesNotExist
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+  # Enable span metrics generation, which is required for the Service Graph.
+  metricsGenerator:
+    enabled: true
+    # The metrics generator will write metrics to a remote Prometheus instance.
+    # This config points it to the Prometheus instance managed by this same chart.
+    remoteWrite:
+      - url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
 
 # Configure the Grafana Agent to receive traces and send them to Tempo
 grafana-agent:
