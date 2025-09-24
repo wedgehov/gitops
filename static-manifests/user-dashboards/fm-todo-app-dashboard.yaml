@@ -41,7 +41,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=\"fm-todo-app-dev/fm-todo-app-dev-backend\"}[5m]))",
+              "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=\"fm-todo-app-dev/fm-todo-app-backend\"}[5m]))",
               "legendFormat": "{{ http_route }}",
               "refId": "A"
             }
@@ -58,7 +58,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "histogram_quantile(0.95, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job=\"fm-todo-app-dev/fm-todo-app-dev-backend\"}[5m])))",
+              "expr": "histogram_quantile(0.95, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job=\"fm-todo-app-dev/fm-todo-app-backend\"}[5m])))",
               "legendFormat": "p95 {{ http_route }}",
               "refId": "A"
             }
@@ -75,7 +75,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"fm-todo-app-dev/fm-todo-app-dev-backend\", container!=\"POD\", container!=\"\"}[5m]))",
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"fm-todo-app-dev/fm-todo-app-backend\", container!=\"POD\", container!=\"\"}[5m]))",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
@@ -92,7 +92,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (pod) (container_memory_working_set_bytes{job=\"fm-todo-app-dev/fm-todo-app-dev-backend\", container!=\"POD\", container!=\"\"})",
+              "expr": "sum by (pod) (container_memory_working_set_bytes{job=\"fm-todo-app-dev/fm-todo-app-backend\", container!=\"POD\", container!=\"\"})",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
