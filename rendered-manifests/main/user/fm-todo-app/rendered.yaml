@@ -28,6 +28,7 @@ kind: Service
 metadata:
   name: fm-todo-app-main-backend
   labels:
+    app: fm-todo-app-main-backend
     # This label is required for the ServiceMonitor to select this Service.
     release: kube-prometheus-stack
 spec:

@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-backend
   labels:
+    app: {{ .Release.Name }}-backend
     # This label is required for the ServiceMonitor to select this Service.
     release: kube-prometheus-stack
 spec:
