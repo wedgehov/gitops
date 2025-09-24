@@ -2,6 +2,20 @@
 crds:
   enabled: false
 
+# Disable the ServiceMonitors for control plane components that are not exposing metrics
+# in this cluster setup. This will clean up the "DOWN" targets in the Prometheus UI.
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
 # Ensure heavy monitoring components are scheduled only on worker nodes
 # by adding an affinity rule that avoids nodes with the control-plane role.
 prometheus:
