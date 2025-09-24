@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-backend
+  labels:
+    # This label is required for the ServiceMonitor to select this Service.
+    release: kube-prometheus-stack
 spec:
   type: ClusterIP
   # The port must be named for the ServiceMonitor to reference it.
@@ -47,13 +50,13 @@ spec:
 {{ toYaml .Values.resources | indent 10 }}
         readinessProbe:
           httpGet:
-            path: /api/health
+            path: /
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           httpGet:
-            path: /api/health
+            path: /
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
