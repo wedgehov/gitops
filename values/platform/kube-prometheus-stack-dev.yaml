@@ -63,12 +63,16 @@ grafana:
       # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
       org_role: Viewer
 
+  # Install the service graph panel plugin
+  plugins:
+    - grafana-service-graph-panel
+
   # Add Tempo as a datasource in Grafana
   additionalDataSources:
     - name: Tempo
       type: tempo
       uid: tempo
-      url: http://{{ .Release.Name }}-tempo.monitoring.svc.cluster.local:3200
+      url: http://{{ .Release.Name }}-grafana-tempo.monitoring.svc.cluster.local:3200
       jsonData:
         serviceMap:
           datasourceUid: 'prometheus'

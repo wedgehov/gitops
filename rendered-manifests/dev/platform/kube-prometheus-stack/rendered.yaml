@@ -184,6 +184,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 data:
   
+  plugins: grafana-service-graph-panel
   grafana.ini: |
     [analytics]
     check_for_updates = true
@@ -247,7 +248,7 @@ data:
       name: Tempo
       type: tempo
       uid: tempo
-      url: http://kube-prometheus-stack-tempo.monitoring.svc.cluster.local:3200
+      url: http://kube-prometheus-stack-grafana-tempo.monitoring.svc.cluster.local:3200
 ---
 # Source: kube-prometheus-stack/templates/grafana/dashboards-1.14/alertmanager-overview.yaml
 apiVersion: v1
@@ -1570,7 +1571,7 @@ spec:
         app.kubernetes.io/name: grafana
         app.kubernetes.io/instance: kube-prometheus-stack
       annotations:
-        checksum/config: 5ea0b5731902a5825036a4fe08544ba8ced4be8181720d134afe166fc0845e4c
+        checksum/config: 7ef29ae84da9ed85b30fed34a5c2e692ccbb8228b3817621ef0176e120e9a972
         checksum/sc-dashboard-provider-config: 593c0a8778b83f11fe80ccb21dfb20bc46705e2be3178df1dc4c89d164c8cd9c
         kubectl.kubernetes.io/default-container: grafana
     spec:
@@ -1710,6 +1711,11 @@ spec:
                 secretKeyRef:
                   name: kube-prometheus-stack-grafana
                   key: admin-password
+            - name: GF_INSTALL_PLUGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: kube-prometheus-stack-grafana
+                  key: plugins
             - name: GF_PATHS_DATA
               value: /var/lib/grafana/
             - name: GF_PATHS_LOGS
