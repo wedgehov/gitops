@@ -72,7 +72,7 @@ grafana:
     - name: Tempo
       type: tempo
       uid: tempo
-      url: http://{{ .Release.Name }}-grafana-tempo.monitoring.svc.cluster.local:3200
+      url: http://{{ .Release.Name }}-tempo.monitoring.svc.cluster.local:3200
       jsonData:
         serviceMap:
           datasourceUid: 'prometheus'

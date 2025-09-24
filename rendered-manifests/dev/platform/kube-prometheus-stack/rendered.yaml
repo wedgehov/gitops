@@ -248,7 +248,7 @@ data:
       name: Tempo
       type: tempo
       uid: tempo
-      url: http://kube-prometheus-stack-grafana-tempo.monitoring.svc.cluster.local:3200
+      url: http://kube-prometheus-stack-tempo.monitoring.svc.cluster.local:3200
 ---
 # Source: kube-prometheus-stack/templates/grafana/dashboards-1.14/alertmanager-overview.yaml
 apiVersion: v1
