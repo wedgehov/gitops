@@ -41,7 +41,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=\"fm-todo-app-dev/fm-todo-app-backend\"}[5m]))",
+              "expr": "sum by (http_route) (rate(http_server_request_duration_seconds_count{job=~\"$job\"}[5m]))",
               "legendFormat": "{{ http_route }}",
               "refId": "A"
             }
@@ -58,7 +58,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "histogram_quantile(0.95, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job=\"fm-todo-app-dev/fm-todo-app-backend\"}[5m])))",
+              "expr": "histogram_quantile(0.95, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job=~\"$job\"}[5m])))",
               "legendFormat": "p95 {{ http_route }}",
               "refId": "A"
             }
@@ -75,7 +75,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"fm-todo-app-dev/fm-todo-app-backend\", container!=\"POD\", container!=\"\"}[5m]))",
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{job=~\"$job\", container!=\"POD\", container!=\"\"}[5m]))",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
@@ -92,7 +92,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (pod) (container_memory_working_set_bytes{job=\"fm-todo-app-dev/fm-todo-app-backend\", container!=\"POD\", container!=\"\"})",
+              "expr": "sum by (pod) (container_memory_working_set_bytes{job=~\"$job\", container!=\"POD\", container!=\"\"})",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
@@ -106,7 +106,21 @@ data:
       "style": "dark",
       "tags": [],
       "templating": {
-        "list": []
+        "list": [
+          {
+            "current": {},
+            "datasource": { "type": "prometheus", "uid": "prometheus" },
+            "definition": "label_values(up{job=~\"fm-todo-app-.*\"}, job)",
+            "hide": 0,
+            "includeAll": false,
+            "multi": false,
+            "name": "job",
+            "options": [],
+            "query": "label_values(up{job=~\"fm-todo-app-.*\"}, job)",
+            "refresh": 1,
+            "type": "query"
+          }
+        ]
       },
       "time": {
         "from": "now-1h",
