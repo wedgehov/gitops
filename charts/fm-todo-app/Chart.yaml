@@ -2,5 +2,5 @@ apiVersion: v2
 name: fm-todo-app
 description: A Helm chart for the F# Mentor Todo application
 type: application
-version: 0.1.0
-appVersion: "v1.0.2"
+version: 0.2.0
+appVersion: "v1.1.0"

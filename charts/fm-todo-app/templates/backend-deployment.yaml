@@ -4,9 +4,11 @@ metadata:
   name: {{ .Release.Name }}-backend
 spec:
   type: ClusterIP
+  # The port must be named for the ServiceMonitor to reference it.
   ports:
     - port: 8080
       targetPort: 8080
+      name: http
   selector:
     app: {{ .Release.Name }}-backend
 ---
@@ -31,6 +33,11 @@ spec:
         env:
         - name: ConnectionStrings__DefaultConnection
           value: "Host={{ .Release.Name }}-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+        # This tells the application where to send its traces.
+        # The Grafana Agent service is named 'kube-prometheus-stack-grafana-agent'
+        # and listens for OTLP traces on port 4317.
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://kube-prometheus-stack-grafana-agent.monitoring.svc.cluster.local:4317"
         envFrom:
         - secretRef:
             name: {{ .Values.database.secretName }}

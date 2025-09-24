@@ -32,4 +32,7 @@ databaseResources: {}
 networkPolicy:
   enabled: false # Set to true in environment values to enable
 
+serviceMonitor:
+  enabled: true
+
 storageClassName: nutanix-volume
