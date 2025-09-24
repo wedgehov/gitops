@@ -63,9 +63,9 @@ grafana:
       # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
       org_role: Viewer
 
-  # Install the service graph panel plugin
-  plugins:
-    - grafana-service-graph-panel
+  # Set the env var directly to ensure the plugin is installed.
+  env:
+    GF_INSTALL_PLUGINS: grafana-service-graph-panel
 
   # Add Tempo as a datasource in Grafana
   additionalDataSources:
@@ -93,30 +93,3 @@ alertmanager:
       limits:
         cpu: 200m
         memory: 256Mi
-
-# Enable Grafana Tempo for trace storage
-tempo:
-  enabled: true
-  # Schedule Tempo on worker nodes
-  tempo:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: DoesNotExist
-  # Enable span metrics generation, which is required for the Service Graph.
-  metricsGenerator:
-    enabled: true
-    # The metrics generator will write metrics to a remote Prometheus instance.
-    # This config points it to the Prometheus instance managed by this same chart.
-    remoteWrite:
-      - url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
-
-# Configure the Grafana Agent to receive traces and send them to Tempo
-grafana-agent:
-  agent:
-    traces:
-      receivers:
-        otlp: # Enable the OpenTelemetry Protocol receiver
