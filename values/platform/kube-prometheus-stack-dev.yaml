@@ -62,10 +62,14 @@ grafana:
       org_name: Main Org.
       # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
       org_role: Viewer
+    # Enable AngularJS support for community plugins that may require it.
+    security:
+      angular_support_enabled: true
 
-  # Set the env var directly to ensure the plugin is installed. This is a more reliable
-  # method than the 'plugins' key which can have wiring issues.
-  env: { GF_INSTALL_PLUGINS: "grafana-service-graph-panel" }
+  # Install the community Service Dependency Graph panel plugin.
+  # The correct ID is 'novatec-sdg-panel'.
+  plugins:
+    - novatec-sdg-panel
 
   # Add Tempo as a datasource in Grafana
   additionalDataSources:
