@@ -75,7 +75,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"fm-todo-app-dev\", container!=\"POD\", container!=\"\"}[5m]))",
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{job=\"fm-todo-app-dev/fm-todo-app-dev-backend\", container!=\"POD\", container!=\"\"}[5m]))",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
@@ -92,7 +92,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"fm-todo-app-dev\", container!=\"POD\", container!=\"\"})",
+              "expr": "sum by (pod) (container_memory_working_set_bytes{job=\"fm-todo-app-dev/fm-todo-app-dev-backend\", container!=\"POD\", container!=\"\"})",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
