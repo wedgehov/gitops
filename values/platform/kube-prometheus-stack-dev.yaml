@@ -63,9 +63,9 @@ grafana:
       # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
       org_role: Viewer
 
-  # Set the env var directly to ensure the plugin is installed.
-  env:
-    GF_INSTALL_PLUGINS: grafana-service-graph-panel
+  # Set the env var directly to ensure the plugin is installed. This is a more reliable
+  # method than the 'plugins' key which can have wiring issues.
+  env: { GF_INSTALL_PLUGINS: "grafana-service-graph-panel" }
 
   # Add Tempo as a datasource in Grafana
   additionalDataSources:
