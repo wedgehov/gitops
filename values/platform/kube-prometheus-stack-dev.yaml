@@ -63,6 +63,16 @@ grafana:
       # Assign the 'Viewer' role to anonymous users. They can view, but not edit.
       org_role: Viewer
 
+  # Add Tempo as a datasource in Grafana
+  additionalDataSources:
+    - name: Tempo
+      type: tempo
+      uid: tempo
+      url: http://{{ .Release.Name }}-tempo.monitoring.svc.cluster.local:3200
+      jsonData:
+        serviceMap:
+          datasourceUid: 'prometheus'
+
 alertmanager:
   alertmanagerSpec:
     affinity:
@@ -79,3 +89,23 @@ alertmanager:
       limits:
         cpu: 200m
         memory: 256Mi
+
+# Enable Grafana Tempo for trace storage
+tempo:
+  enabled: true
+  # Schedule Tempo on worker nodes
+  tempo:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
+
+# Configure the Grafana Agent to receive traces and send them to Tempo
+grafana-agent:
+  agent:
+    traces:
+      receivers:
+        otlp: # Enable the OpenTelemetry Protocol receiver
