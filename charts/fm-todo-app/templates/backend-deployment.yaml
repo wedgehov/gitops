@@ -38,9 +38,9 @@ spec:
         - name: ConnectionStrings__DefaultConnection
           value: "Host={{ .Release.Name }}-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
         # This tells the application where to send its traces. The standalone Tempo service
-        # is named 'tempo-dev-tempo' and listens for OTLP traces on port 4317.
+        # is named 'tempo-dev' and listens for OTLP traces on port 4317.
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://tempo-dev-tempo.monitoring.svc.cluster.local:4317"
+          value: "http://tempo-dev.monitoring.svc.cluster.local:4317"
         # Use the gRPC protocol for exporting traces.
         - name: OTEL_EXPORTER_OTLP_PROTOCOL
           value: "grpc"

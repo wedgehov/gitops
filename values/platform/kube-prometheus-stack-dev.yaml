@@ -76,7 +76,7 @@ grafana:
     - name: Tempo
       type: tempo
       uid: tempo
-      url: http://tempo-dev-tempo.monitoring.svc.cluster.local:3200
+      url: http://tempo-dev.monitoring.svc.cluster.local:3100
       # Use 'proxy' to make Grafana's backend handle requests, not the browser.
       access: proxy
       jsonData:
