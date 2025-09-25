@@ -87,11 +87,19 @@ spec:
         env:
         - name: ConnectionStrings__DefaultConnection
           value: "Host=fm-todo-app-main-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
-        # This tells the application where to send its traces.
-        # The Grafana Agent service is named 'kube-prometheus-stack-grafana-agent'
-        # and listens for OTLP traces on port 4317.
+        # This tells the application where to send its traces. The Tempo service
+        # is named 'kube-prometheus-stack-tempo' and listens for OTLP traces on port 4317.
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://kube-prometheus-stack-grafana-agent.monitoring.svc.cluster.local:4317"
+          value: "http://kube-prometheus-stack-tempo.monitoring.svc.cluster.local:4317"
+        # Use the gRPC protocol for exporting traces.
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          value: "grpc"
+        # Explicitly set the service name to match the Grafana dashboard query.
+        - name: OTEL_SERVICE_NAME
+          value: "fm-todo-app-backend"
+        # Ensure all traces are sampled and sent.
+        - name: OTEL_TRACES_SAMPLER
+          value: "always_on"
         envFrom:
         - secretRef:
             name: fm-todo-app-db-secret
