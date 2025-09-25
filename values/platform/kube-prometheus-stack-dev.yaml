@@ -77,6 +77,8 @@ grafana:
       type: tempo
       uid: tempo
       url: http://{{ .Release.Name }}-tempo.monitoring.svc.cluster.local:3200
+      # Use 'proxy' to make Grafana's backend handle requests, not the browser.
+      access: proxy
       jsonData:
         serviceMap:
           datasourceUid: 'prometheus'

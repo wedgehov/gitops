@@ -244,7 +244,8 @@ data:
       jsonData:
         handleGrafanaManagedAlerts: false
         implementation: prometheus
-    - jsonData:
+    - access: proxy
+      jsonData:
         serviceMap:
           datasourceUid: prometheus
       name: Tempo
