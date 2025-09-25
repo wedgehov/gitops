@@ -99,3 +99,29 @@ alertmanager:
       limits:
         cpu: 200m
         memory: 256Mi
+
+# Enable the Tempo sub-chart to deploy a Tempo instance for storing traces.
+tempo:
+  enabled: true
+  # Ensure Tempo is scheduled on a worker node.
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+  # Configure Tempo to receive traces from the Grafana Agent.
+  tempo:
+    searchEnabled: true
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: "0.0.0.0:4317"
+          http:
+            endpoint: "0.0.0.0:4318"
+  # Use a persistent volume to store trace data.
+  persistence:
+    enabled: true
+    size: 10Gi
