@@ -101,20 +101,18 @@ data:
           "type": "timeseries"
         },
         {
-          "datasource": { "type": "tempo", "uid": "tempo" },
-          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+          "datasource": { "type": "tempo", "uid": "tempo"},
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
           "id": 5,
           "options": {
-            "legend": { "show": false },
-            "nodeGraph": { "enabled": true },
-            "serviceMap": { "enabled": true }
+            "showTraceGraph": false,
+            "display": "traces"
           },
-          "pluginVersion": "10.3.3",
           "targets": [
             { "datasource": { "type": "tempo", "uid": "tempo" }, "query": "{ resource.service.name == \"fm-todo-app-backend\" }" }
           ],
-          "title": "Service Map",
-          "type": "servicegraph"
+          "title": "Recent Traces",
+          "type": "traces"
         }
       ],
       "refresh": "",
