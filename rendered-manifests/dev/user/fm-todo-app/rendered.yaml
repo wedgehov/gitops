@@ -90,7 +90,7 @@ spec:
         # This tells the application where to send its traces. The Tempo service
         # is named 'kube-prometheus-stack-tempo' and listens for OTLP traces on port 4317.
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://kube-prometheus-stack-dev-tempo.monitoring.svc.cluster.local:4317"
+          value: "http://kube-prometheus-stack-tempo.monitoring.svc.cluster.local:4317"
         # Use the gRPC protocol for exporting traces.
         - name: OTEL_EXPORTER_OTLP_PROTOCOL
           value: "grpc"

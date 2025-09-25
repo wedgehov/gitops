@@ -76,7 +76,7 @@ grafana:
     - name: Tempo
       type: tempo
       uid: tempo
-      url: http://{{ .Release.Name }}-tempo.monitoring.svc.cluster.local:3200
+      url: http://kube-prometheus-stack-tempo.monitoring.svc.cluster.local:3200
       # Use 'proxy' to make Grafana's backend handle requests, not the browser.
       access: proxy
       jsonData:
@@ -112,16 +112,22 @@ tempo:
               - key: node-role.kubernetes.io/control-plane
                 operator: DoesNotExist
   # Configure Tempo to receive traces from the Grafana Agent.
+  # Note: Keys are snake_case as expected by the Tempo chart.
   tempo:
-    searchEnabled: true
+    search_enabled: true
+  distributor:
     receivers:
       otlp:
         protocols:
-          grpc:
-            endpoint: "0.0.0.0:4317"
-          http:
-            endpoint: "0.0.0.0:4318"
+          grpc: {}
+          http: {}
   # Use a persistent volume to store trace data.
   persistence:
     enabled: true
     size: 10Gi
+  # Expose the OTLP ports on the Tempo service so the backend can send traces.
+  service:
+    otlpGrpc:
+      port: 4317
+    otlpHttp:
+      port: 4318
