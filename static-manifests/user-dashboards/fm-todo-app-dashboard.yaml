@@ -109,7 +109,7 @@ data:
             "display": "traces"
           },
           "targets": [
-            { "datasource": { "type": "tempo", "uid": "tempo" }, "query": "{ resource.service.name == \"fm-todo-app-backend\" }" }
+            { "datasource": { "type": "tempo", "uid": "tempo" }, "query": "{ resource.service.name = \"fm-todo-app-backend\" }" }
           ],
           "title": "Recent Traces",
           "type": "traces"
