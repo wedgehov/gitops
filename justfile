@@ -2,11 +2,13 @@
 ARGOCD_HELM_REPO := "https://argoproj.github.io/argo-helm"
 ARGOCD_CHART_VERSION := "5.51.5"
 PROMETHEUS_HELM_REPO := "https://prometheus-community.github.io/helm-charts"
-PROMETHEUS_CHART_VERSION := "57.0.1" # A recent, stable version
+PROMETHEUS_CHART_VERSION := "57.0.1"
+TEMPO_HELM_REPO := "https://grafana.github.io/helm-charts"
+TEMPO_CHART_VERSION := "1.7.1"
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main
+render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -52,6 +54,13 @@ render-kube-prometheus-stack-dev:
 	# Render the chart from the public repository using our custom values. CRDs are installed separately.
 	helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --version {{PROMETHEUS_CHART_VERSION}} --namespace monitoring -f ./values/platform/kube-prometheus-stack-dev.yaml > ./rendered-manifests/dev/platform/kube-prometheus-stack/rendered.yaml
 	echo "Rendered kube-prometheus-stack for dev."
+
+render-tempo-dev:
+	mkdir -p rendered-manifests/dev/platform/tempo
+	helm repo add grafana {{TEMPO_HELM_REPO}} --force-update
+	# The release name 'tempo-dev' will result in a service named 'tempo-dev-tempo'.
+	helm template tempo-dev grafana/tempo --version {{TEMPO_CHART_VERSION}} --namespace monitoring -f ./values/platform/tempo-dev.yaml > ./rendered-manifests/dev/platform/tempo/rendered.yaml
+	echo "Rendered tempo for dev."
 
 render-argocd-dev:
 	mkdir -p rendered-manifests/dev/platform/argocd

@@ -20,6 +20,10 @@ spec:
         wave: "-5" # Deploy after ArgoCD but before other apps
         path: rendered-manifests/dev/platform/kube-prometheus-stack
         namespace: monitoring
+      - name: tempo-dev
+        wave: "-4" # Deploy after monitoring stack but before apps
+        path: rendered-manifests/dev/platform/tempo
+        namespace: monitoring
       - name: user-dashboards
         wave: "15" # Deploy dashboards after the apps themselves
         path: static-manifests/user-dashboards

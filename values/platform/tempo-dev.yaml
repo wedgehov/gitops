@@ -1,0 +1,26 @@
+# Values for the grafana/tempo Helm chart.
+
+# The release name for this chart will be 'tempo-dev'.
+# The service will be named 'tempo-dev-tempo'.
+
+tempo:
+  search_enabled: true
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc: {}
+        http: {}
+
+service:
+  otlpGrpc:
+    enabled: true
+    port: 4317
+  otlpHttp:
+    enabled: true
+    port: 4318
+
+persistence:
+  enabled: true
+  size: 10Gi
