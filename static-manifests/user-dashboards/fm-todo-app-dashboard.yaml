@@ -104,13 +104,18 @@ data:
           "datasource": { "type": "tempo", "uid": "tempo"},
           "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
           "id": 5,
-          "options": {},
+          "options": {
+            "display": "traces",
+            "showTable": true,
+            "spanBar": true,
+            "showTraceGraph": false
+          },
           "pluginVersion": "11.2.0",
           "targets": [
             {
-              "datasource": { "type": "tempo", "uid": "tempo" },
+              "datasource": { "type": "tempo", "uid": "tempo"},
               "query": "{ resource.service.name = \"fm-todo-app-backend\" }",
-              "queryType": "traceql",
+              "queryType": "traceqlSearch",
               "refId": "A"
             }
           ],
