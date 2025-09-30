@@ -25,11 +25,10 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: "{{ .Values.frontend.image.repository }}:{{ required "A value for frontend.image.tag is required" .Values.frontend.image.tag }}"
+        image: "{{ .Values.frontend.image.repository }}:{{- default .Values.imageTag .Values.frontend.image.tag | required "An image tag is required. Set either .Values.imageTag or .Values.frontend.image.tag" }}"
         imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
         env:
         - name: API_URL
           value: "http://{{ .Release.Name }}-backend:8080"
         ports:
         - containerPort: 80
-

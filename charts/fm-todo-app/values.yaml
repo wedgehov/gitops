@@ -2,17 +2,19 @@
 
 replicaCount: 1
 
+imageTag: "" # This will be overridden by environment-specific values
+
 frontend:
   image:
     repository: ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend
     pullPolicy: IfNotPresent
-    tag: "" # This will be overridden by environment-specific values
+    tag: "" # Defaults to .Values.imageTag
 
 backend:
   image:
     repository: ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend
     pullPolicy: IfNotPresent
-    tag: "" # This will be overridden by environment-specific values
+    tag: "" # Defaults to .Values.imageTag
 
 database:
   image:

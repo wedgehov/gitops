@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: "{{ .Values.backend.image.repository }}:{{ required "A value for backend.image.tag is required" .Values.backend.image.tag }}"
+        image: "{{ .Values.backend.image.repository }}:{{- default .Values.imageTag .Values.backend.image.tag | required "An image tag is required. Set either .Values.imageTag or .Values.backend.image.tag" }}"
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
         env:
         - name: ConnectionStrings__DefaultConnection

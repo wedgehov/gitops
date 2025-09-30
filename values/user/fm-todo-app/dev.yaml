@@ -1,12 +1,7 @@
 # Overrides for the 'fm-todo-app' in the 'dev' environment
 
-frontend:
-  image:
-    tag: "v1.2.0"
-
-backend:
-  image:
-    tag: "v1.2.0"
+# Use a global tag for both frontend and backend images
+imageTag: "v1.3.0"
 
 ingress:
   host: fm-todo-app-dev.serit.dev
