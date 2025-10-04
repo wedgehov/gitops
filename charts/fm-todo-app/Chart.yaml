@@ -3,4 +3,4 @@ name: fm-todo-app
 description: A Helm chart for the F# Mentor Todo application
 type: application
 version: 0.2.2
-appVersion: "v1.3.0"
+appVersion: "v1.4.0"

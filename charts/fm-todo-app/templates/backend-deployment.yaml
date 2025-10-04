@@ -27,6 +27,8 @@ spec:
       app: {{ .Release.Name }}-backend
   template:
     metadata:
+      annotations:
+        checksum/config: {{ toYaml .Values | sha256sum }}
       labels:
         app: {{ .Release.Name }}-backend
     spec:

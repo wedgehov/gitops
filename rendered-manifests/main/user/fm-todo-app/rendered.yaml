@@ -77,6 +77,8 @@ spec:
       app: fm-todo-app-main-backend
   template:
     metadata:
+      annotations:
+        checksum/config: a589ea2cf65be0fba7bb490a16157f8c88f1bdb3afe4c860d6a4294364c8b525
       labels:
         app: fm-todo-app-main-backend
     spec:
@@ -134,6 +136,8 @@ spec:
       app: fm-todo-app-main-frontend
   template:
     metadata:
+      annotations:
+        checksum/config: a589ea2cf65be0fba7bb490a16157f8c88f1bdb3afe4c860d6a4294364c8b525
       labels:
         app: fm-todo-app-main-frontend
     spec:

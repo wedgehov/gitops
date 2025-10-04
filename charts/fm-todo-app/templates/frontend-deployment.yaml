@@ -20,6 +20,8 @@ spec:
       app: {{ .Release.Name }}-frontend
   template:
     metadata:
+      annotations:
+        checksum/config: {{ toYaml .Values | sha256sum }}
       labels:
         app: {{ .Release.Name }}-frontend
     spec:
