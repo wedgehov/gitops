@@ -78,13 +78,13 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 5656ad49fec629a7c8a8bb307f8cc9add0129830981026d4934c25856031bced
+        checksum/config: 0aa5eb4bd42bfd9fcf72610a4c9bcb25748b57f4fa7a9eedca91a359d5e4ffcd
       labels:
         app: fm-todo-app-backend
     spec:
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:v1.4.0"
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:v1.5.0"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
@@ -137,13 +137,13 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 5656ad49fec629a7c8a8bb307f8cc9add0129830981026d4934c25856031bced
+        checksum/config: 0aa5eb4bd42bfd9fcf72610a4c9bcb25748b57f4fa7a9eedca91a359d5e4ffcd
       labels:
         app: fm-todo-app-frontend
     spec:
       containers:
       - name: frontend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend:v1.4.0"
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend:v1.5.0"
         imagePullPolicy: IfNotPresent
         env:
         - name: API_URL
