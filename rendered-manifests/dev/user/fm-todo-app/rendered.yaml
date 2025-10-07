@@ -155,7 +155,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: fm-todo-app-db-v3
+  name: fm-todo-app-db-v4
 spec:
   serviceName: fm-todo-app-db
   replicas: 1
@@ -182,11 +182,11 @@ spec:
             cpu: 100m
             memory: 256Mi
         volumeMounts:
-        - name: db-data-v3
+        - name: db-data-v4
           mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
   - metadata:
-      name: db-data-v3
+      name: db-data-v4
     spec:
       accessModes: ["ReadWriteOnce"]
       storageClassName: nutanix-volume

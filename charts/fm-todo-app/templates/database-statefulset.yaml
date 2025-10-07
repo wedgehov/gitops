@@ -12,7 +12,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-db-v3
+  name: {{ .Release.Name }}-db-v4
 spec:
   serviceName: {{ .Release.Name }}-db
   replicas: 1
@@ -37,11 +37,11 @@ spec:
         resources:
 {{ toYaml .Values.databaseResources | indent 10 }}
         volumeMounts:
-        - name: db-data-v3
+        - name: db-data-v4
           mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
   - metadata:
-      name: db-data-v3
+      name: db-data-v4
     spec:
       accessModes: ["ReadWriteOnce"]
       storageClassName: {{ .Values.storageClassName }}
