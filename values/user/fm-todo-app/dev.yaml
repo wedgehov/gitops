@@ -3,6 +3,9 @@
 # Use a global tag for both frontend and backend images
 imageTag: "v1.5.0"
 
+backend:
+  aspnetcoreEnvironment: "Development"
+
 ingress:
   host: fm-todo-app-dev.serit.dev
 

@@ -15,6 +15,7 @@ backend:
     repository: ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend
     pullPolicy: IfNotPresent
     tag: "" # Defaults to .Values.imageTag
+  aspnetcoreEnvironment: "Production"
 
 database:
   image:

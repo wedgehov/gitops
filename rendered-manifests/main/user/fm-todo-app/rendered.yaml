@@ -78,7 +78,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: a589ea2cf65be0fba7bb490a16157f8c88f1bdb3afe4c860d6a4294364c8b525
+        checksum/config: 38cc6a17c6ec003bd09db77504ab71b1e7b5e0583ac5de962ab06e3c2301020c
       labels:
         app: fm-todo-app-main-backend
     spec:
@@ -102,6 +102,8 @@ spec:
         # Ensure all traces are sampled and sent.
         - name: OTEL_TRACES_SAMPLER
           value: "always_on"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
         envFrom:
         - secretRef:
             name: fm-todo-app-db-secret
@@ -137,7 +139,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: a589ea2cf65be0fba7bb490a16157f8c88f1bdb3afe4c860d6a4294364c8b525
+        checksum/config: 38cc6a17c6ec003bd09db77504ab71b1e7b5e0583ac5de962ab06e3c2301020c
       labels:
         app: fm-todo-app-main-frontend
     spec:

@@ -52,6 +52,8 @@ spec:
         # Ensure all traces are sampled and sent.
         - name: OTEL_TRACES_SAMPLER
           value: "always_on"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "{{ .Values.backend.aspnetcoreEnvironment }}"
         envFrom:
         - secretRef:
             name: {{ .Values.database.secretName }}
