@@ -1,0 +1,28 @@
+# Overrides for the 'link-sharing-app' in the 'dev' environment
+
+# Deterministic pre-release tag for early deployment
+imageTag: "v0.1.0-alpha.1"
+
+# Private GHCR pull secret
+imagePullSecretName: "ghcr-credentials"
+
+backend:
+  aspnetcoreEnvironment: "Development"
+
+ingress:
+  host: link-sharing-app-dev.serit.dev
+
+networkPolicy:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+databaseResources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+

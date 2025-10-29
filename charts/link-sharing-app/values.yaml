@@ -1,0 +1,47 @@
+# Default values for link-sharing-app.
+
+replicaCount: 1
+
+# Global image tag. Can be overridden per image.
+imageTag: ""
+
+# For pulling private images from GHCR
+imagePullSecretName: ""
+
+frontend:
+  image:
+    repository: ghcr.io/serit/link-sharing-app/frontend
+    pullPolicy: IfNotPresent
+    tag: "" # Defaults to .Values.imageTag
+
+backend:
+  image:
+    repository: ghcr.io/serit/link-sharing-app/backend
+    pullPolicy: IfNotPresent
+    tag: "" # Defaults to .Values.imageTag
+  aspnetcoreEnvironment: "Production"
+
+database:
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  storage: 1Gi
+  secretName: link-sharing-app-db-secret
+
+ingress:
+  enabled: true
+  className: nginx
+  host: link-sharing-app.example.com
+
+resources: {}
+databaseResources: {}
+
+networkPolicy:
+  enabled: false
+
+serviceMonitor:
+  enabled: true
+
+storageClassName: nutanix-volume
+
+

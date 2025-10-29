@@ -191,18 +191,18 @@ Because Argo CD is managed by itself as a child application, upgrading it is a s
 4.  The `root` app will see that the `argocd` child application is out of sync and will automatically sync it, performing the upgrade.
 
 ## Day-to-Day Workflow
- 
+
  ### Updating an Existing Application
- 
+
  1.  **Modify**: Make changes to the application's chart in `charts/` or its configuration in the relevant `values/` file.
  2.  **Render**: Run `just render-all-dev` (or the specific command, e.g., `just render-todo-app-dev`).
  3.  **Commit & Push**: Commit the changes along with the updated `rendered.yaml` file and push to Git.
  4.  **Sync**: Argo CD will automatically detect the change and sync your cluster.
- 
+
  ### Adding a New Application
- 
+
  This example shows how to add a new application (`blog-app`) that uses a **custom Helm chart** from the `charts/` directory.
- 
+
  1.  **Create Chart**: Copy an existing chart (e.g., `charts/todo-app`) to `charts/blog-app` and modify its templates.
  2.  **Create Values**: Create `values/user/blog-app/dev.yaml` with its specific configuration (e.g., `ingress.host: blog.dev.vegard.io`).
  3.  **Update `justfile.sh`**:
@@ -217,18 +217,18 @@ Because Argo CD is managed by itself as a child application, upgrading it is a s
      ~~~
  5.  **Render, Commit, Push**: Run `just render-all-dev`, then commit and push all the new and modified files.
  6.  **Apply to Cluster**: Run `just bootstrap` to apply the updated `ApplicationSet`. Argo CD will then find and deploy your new blog application.
- 
+
  ### Adding a New Platform Application (from a public chart)
- 
+
  This example shows how to add an application (`cert-manager`) that uses a **public Helm chart**.
- 
+
  1.  **Create Values File**: Create a new values file at `values/platform/cert-manager-dev.yaml` to configure the public chart.
- 
+
  2.  **Update `justfile.sh`**: Add a new render command that pulls the public chart and templates it with your custom values.
      *   Add variables for the chart repository and version at the top.
      *   Create a `render-cert-manager-dev` command.
      *   Add the new command to the `render-all-dev` meta-command.
- 
+
  3.  **Update `ApplicationSet`**: Add a new entry for `cert-manager` to the `elements` list in `bootstrap/root-app.yaml`.
      ~~~yaml
      # ... existing elements ...
@@ -238,6 +238,46 @@ Because Argo CD is managed by itself as a child application, upgrading it is a s
      ~~~
  4.  **Render, Commit, Push**: Run `just render-all-dev`, then commit and push all the new and modified files.
  5.  **Apply to Cluster**: Run `just bootstrap` to apply the updated `ApplicationSet`.
+
+## Deploying Apps with Private GHCR Images
+
+Some applications pull their container images from a private GitHub Container Registry (GHCR). To enable these deployments:
+
+1. Create a registry secret in each target namespace:
+   ~~~bash
+   kubectl create secret docker-registry ghcr-credentials \
+     --namespace <namespace> \
+     --docker-server=ghcr.io \
+     --docker-username <github-username> \
+     --docker-password '<PAT_with_read:packages>'
+   ~~~
+
+2. In the app’s Helm values set:
+   ~~~yaml
+   imagePullSecretName: ghcr-credentials
+   ~~~
+   Charts include:
+   ~~~yaml
+   spec:
+     imagePullSecrets:
+       - name: {{ .Values.imagePullSecretName }}
+   ~~~
+
+3. Render, commit, and push the updated manifests. Argo CD will sync the changes.
+
+### Example: Link Sharing App (dev)
+
+- Values file: `values/user/link-sharing-app/dev.yaml`
+- Deterministic image tag (pre-release): `v0.1.0-alpha.1`
+- Render only this app:
+  ~~~bash
+  just render-link-sharing-app-dev
+  git add rendered-manifests/dev/user/link-sharing-app/rendered.yaml
+  git commit -m "feat(link-sharing-app): render dev manifests"
+  git push
+  ~~~
+
+Ensure images exist in GHCR with the configured tag before syncing.
 
 ## Path to True GitOps (TODO)
 

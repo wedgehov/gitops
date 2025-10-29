@@ -42,6 +42,10 @@ spec:
         wave: "10" # Deploy user apps last
         path: rendered-manifests/dev/user/fm-todo-app
         namespace: fm-todo-app-dev
+      - name: link-sharing-app-dev
+        wave: "10" # Deploy user apps last
+        path: rendered-manifests/dev/user/link-sharing-app
+        namespace: link-sharing-app-dev
       # User Applications from 'main' branch
       - name: tip-calculator-app-main
         wave: "11"

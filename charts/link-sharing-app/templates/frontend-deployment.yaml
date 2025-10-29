@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: {{ .Release.Name }}-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-frontend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-frontend
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ toYaml .Values | sha256sum }}
+      labels:
+        app: {{ .Release.Name }}-frontend
+    spec:
+      {{- with .Values.imagePullSecretName }}
+      imagePullSecrets:
+        - name: {{ . }}
+      {{- end }}
+      containers:
+      - name: frontend
+        image: "{{ .Values.frontend.image.repository }}:{{- default .Values.imageTag .Values.frontend.image.tag | required "An image tag is required. Set either .Values.imageTag or .Values.frontend.image.tag" }}"
+        imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+        env:
+        - name: API_URL
+          value: "http://{{ .Release.Name }}-backend:8080"
+        ports:
+        - containerPort: 80
+
+

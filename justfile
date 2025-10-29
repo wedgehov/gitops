@@ -8,7 +8,7 @@ TEMPO_CHART_VERSION := "1.7.1"
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main
+render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -93,3 +93,8 @@ render-fm-todo-app-main:
 	mkdir -p rendered-manifests/main/user/fm-todo-app
 	helm template fm-todo-app-main ./charts/fm-todo-app --namespace fm-todo-app-main -f ./values/user/fm-todo-app/main.yaml > ./rendered-manifests/main/user/fm-todo-app/rendered.yaml
 	echo "Rendered fm-todo-app for main."
+
+render-link-sharing-app-dev:
+    mkdir -p rendered-manifests/dev/user/link-sharing-app
+    helm template link-sharing-app-dev ./charts/link-sharing-app --namespace link-sharing-app-dev -f ./values/user/link-sharing-app/dev.yaml > ./rendered-manifests/dev/user/link-sharing-app/rendered.yaml
+    echo "Rendered link-sharing-app for dev."
