@@ -75,7 +75,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 913c352caa7b98ae25bb8fe18bc77af22d3c8450b085830a028b5ecfb657f153
+        checksum/config: 47ccf2da7cc28bfc7554465352a1aa08ccc1c7b293911fb44246814535d5f722
       labels:
         app: link-sharing-app-dev-backend
     spec:
@@ -83,7 +83,7 @@ spec:
         - name: ghcr-credentials
       containers:
       - name: backend
-        image: "ghcr.io/serit/link-sharing-app/backend:v0.1.0-alpha.1"
+        image: "ghcr.io/serit/link-sharing-app/backend:v0.1.1"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
@@ -134,7 +134,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 913c352caa7b98ae25bb8fe18bc77af22d3c8450b085830a028b5ecfb657f153
+        checksum/config: 47ccf2da7cc28bfc7554465352a1aa08ccc1c7b293911fb44246814535d5f722
       labels:
         app: link-sharing-app-dev-frontend
     spec:
@@ -142,7 +142,7 @@ spec:
         - name: ghcr-credentials
       containers:
       - name: frontend
-        image: "ghcr.io/serit/link-sharing-app/frontend:v0.1.0-alpha.1"
+        image: "ghcr.io/serit/link-sharing-app/frontend:v0.1.1"
         imagePullPolicy: IfNotPresent
         env:
         - name: API_URL

@@ -1,7 +1,7 @@
 # Overrides for the 'link-sharing-app' in the 'dev' environment
 
 # Deterministic pre-release tag for early deployment
-imageTag: "v0.1.0-alpha.1"
+imageTag: "v0.1.1"
 
 # Private GHCR pull secret
 imagePullSecretName: "ghcr-credentials"
