@@ -9,8 +9,13 @@ EXTERNAL_SECRETS_HELM_REPO := "https://charts.external-secrets.io"
 EXTERNAL_SECRETS_CHART_VERSION := "2.0.1"
 
 # Meta-command to render all components for the 'dev' environment.
-# This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-external-secrets-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-main
+# Start from a clean rendered-manifests state to avoid stale outputs.
+render-all-dev: clean-rendered-manifests render-argocd-dev render-external-secrets-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-main
+
+# Remove previously rendered manifests so only active targets remain.
+clean-rendered-manifests:
+	rm -rf rendered-manifests/dev/platform rendered-manifests/dev/user rendered-manifests/dev/user-secrets rendered-manifests/main/user rendered-manifests/main/user-secrets
+	echo "Cleaned rendered-manifests output directories."
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:

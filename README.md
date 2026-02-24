@@ -37,36 +37,30 @@ The repository is organized to cleanly separate concerns: application templates 
 
     my-gitops-repo/
     ├── bootstrap/
-    │   └── root-app.yaml
+    │   ├── root-app.yaml
+    │   └── argocd-controller-clusterrolebinding.yaml
+    ├── crds/
+    │   └── prometheus/
+    │       └── crds.yaml
     ├── charts/
-    │   ├── todo-app/
-    │   ├── fm-todo-app/
-    │   └── link-sharing-app/
-    ├── rendered-manifests/
-    │   └── dev/
-    │       ├── platform/
-    │       │   ├── argocd/
-    │       │   │   └── rendered.yaml
-    │       │   ├── kube-prometheus-stack/
-    │       │   │   └── rendered.yaml
-    │       │   └── tempo/
-    │       │       └── rendered.yaml
-    │       └── user/
-    │           └── todo-app/
-    │               └── rendered.yaml
+    │   └── <one-chart-per-app>/
     ├── values/
     │   ├── platform/
-    │   │   ├── argocd-dev.yaml
-    │   │   ├── kube-prometheus-stack-dev.yaml
-    │   │   └── tempo-dev.yaml
+    │   │   └── *-dev.yaml
     │   └── user/
-    │       └── todo-app/
-    │           └── dev.yaml
+    │       └── <app>/<env>.yaml
+    ├── rendered-manifests/
+    │   ├── dev/
+    │   │   ├── platform/<component>/rendered.yaml
+    │   │   └── user/<app>/rendered.yaml
+    │   └── main/
+    │       └── user/<app>/rendered.yaml
     ├── static-manifests/
-    │   └── platform/
-    │       ├── monitoring-namespace.yaml
-    │       └── cert-manager/
-    │           └── clusterissuer-letsencrypt-prod.yaml
+    │   ├── platform/
+    │   │   ├── cert-manager/
+    │   │   ├── monitoring-namespace.yaml
+    │   │   └── secrets-config/
+    │   └── user-dashboards/
     └── justfile
 
 *   `bootstrap/`: Contains the initial, one-time manual setup files. This includes the root `ApplicationSet`.
@@ -82,7 +76,7 @@ The `bootstrap` process applies a few critical manifests imperatively to prepare
 
 *   **`bootstrap/argocd-controller-clusterrolebinding.yaml`**: This grants the Argo CD controller `cluster-admin` permissions. Argo CD needs these elevated permissions to manage applications across all namespaces, creating deployments, services, and other resources as defined in Git.
 
-*   **`crds/prometheus/crds.yaml`**: This file contains all the Custom Resource Definitions (CRDs) required by the `kube-prometheus-stack`. These CRDs must be applied to the cluster *before* the `kube-prometheus-stack` application is deployed. This solves a "chicken-and-egg" problem, ensuring the cluster API knows about resources like `ServiceMonitors` and `PrometheusRules` before Argo CD tries to create them.
+*   **`crds/prometheus/crds.yaml`**: Contains the Custom Resource Definitions (CRDs) required by `kube-prometheus-stack`, a bundled monitoring solution providing Prometheus, Alertmanager, and Grafana. These CRDs must be applied before Argo CD syncs the stack. Otherwise, Argo CD will fail with a "synchronization tasks are not valid" error when attempting to deploy resources like `ServiceMonitor` or `PrometheusRule` before the cluster API knows what those resources are. Pre-applying them ensures a deterministic deployment order.
 
 *   **`static-manifests/platform/monitoring-namespace.yaml`**: This manifest pre-creates the `monitoring` namespace with the necessary `pod-security.kubernetes.io/enforce: privileged` label. The `kube-prometheus-stack` requires some components (like `node-exporter`) to run with privileged access. Creating the namespace with the correct labels beforehand ensures that its pods can be scheduled successfully by Argo CD without any security context race conditions.
 
@@ -97,17 +91,15 @@ Even though you may only have one cluster (`dev`), this structure is built to sc
 
     my-gitops-repo/
     ├── bootstrap/
-    │   └── root-app.yaml         # Add a new entry for the test app here
-    ├── ...
+    │   └── root-app.yaml                 # Add new app/environment entries
     ├── rendered-manifests/
-    │   ├── dev/
-    │   └── test/                 # New folder for test manifests
+    │   ├── dev/{platform,user}/...
+    │   ├── test/{platform,user}/...      # optional new environment
+    │   └── prod/{platform,user}/...      # optional new environment
     ├── values/
-    │   └── user/
-    │       └── todo-app/
-    │           ├── dev.yaml
-    │           └── test.yaml       # New values for the test environment
-    └── justfile                    # Updated with a 'render-todo-app-test' command
+    │   ├── platform/*-{dev,test,prod}.yaml
+    │   └── user/<app>/{dev,test,prod}.yaml
+    └── justfile                            # add matching render commands
 
 ## Getting Started: Bootstrapping a New Cluster
 
