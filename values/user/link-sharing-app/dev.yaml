@@ -10,7 +10,7 @@ backend:
   aspnetcoreEnvironment: "Development"
 
 ingress:
-  host: link-sharing-app-dev.serit.dev
+  host: link-sharing-app-dev.vhovet.com
 
 networkPolicy:
   enabled: true

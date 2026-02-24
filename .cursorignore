@@ -1,0 +1,3 @@
+# Ignore generated and bulky manifests in Cursor indexing/search
+crds/
+rendered-manifests/

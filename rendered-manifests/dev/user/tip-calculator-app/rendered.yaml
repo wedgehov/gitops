@@ -49,9 +49,9 @@ kind: Ingress
 metadata:
   name: tip-calculator-app-ingress
 spec:
-  ingressClassName: nginx
+  ingressClassName: webapprouting.kubernetes.azure.com
   rules:
-  - host: "tip-calculator-dev.serit.dev"
+  - host: "tip-calculator-dev.vhovet.com"
     http:
       paths:
       - path: /

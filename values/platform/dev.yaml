@@ -1,4 +1,0 @@
-# Overrides for platform components in the 'dev' environment
-tunnel:
-  name: vegard-sandbox-tunnel
-

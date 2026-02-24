@@ -1,6 +1,0 @@
-apiVersion: v2
-name: cloudflare-tunnel
-description: A Helm chart for the shared Cloudflare Tunnel
-type: application
-version: 0.1.1
-appVersion: "2024.5.0" # Align with the image tag used in the template

@@ -5,7 +5,7 @@ image:
   pullPolicy: Always
 
 ingress:
-  host: tip-calculator-dev-main.serit.dev
+  host: tip-calculator-dev-main.vhovet.com
 
 resources:
   requests:

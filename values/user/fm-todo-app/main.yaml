@@ -11,7 +11,7 @@ backend:
     tag: "latest"
 
 ingress:
-  host: fm-todo-app-dev-main.serit.dev
+  host: fm-todo-app-dev-main.vhovet.com
 
 networkPolicy:
   enabled: true

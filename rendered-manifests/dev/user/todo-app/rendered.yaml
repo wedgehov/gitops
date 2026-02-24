@@ -85,7 +85,7 @@ spec:
           exec dotnet TodoApi.dll
         env:
         - name: FrontendOrigin
-          value: https://todo-app-dev.serit.dev
+          value: https://todo-app-dev.vhovet.com
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -185,7 +185,7 @@ spec:
       name: db-data
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: nutanix-volume
+      storageClassName: managed-csi
       resources:
         requests:
           storage: 1Gi
@@ -202,9 +202,9 @@ metadata:
     # Ensure the NGINX proxy doesn't buffer the response, which helps with real-time streams
     nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
-  ingressClassName: nginx
+  ingressClassName: webapprouting.kubernetes.azure.com
   rules:
-  - host: "todo-app-dev.serit.dev"
+  - host: "todo-app-dev.vhovet.com"
     http:
       paths:
       # Route API and SignalR traffic to the backend service

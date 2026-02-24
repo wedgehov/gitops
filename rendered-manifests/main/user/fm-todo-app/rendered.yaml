@@ -78,7 +78,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 38cc6a17c6ec003bd09db77504ab71b1e7b5e0583ac5de962ab06e3c2301020c
+        checksum/config: e549790af138794b1ac5bbe561183a973d1fd4f25d76e890e05382e130eee672
       labels:
         app: fm-todo-app-main-backend
     spec:
@@ -139,7 +139,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 38cc6a17c6ec003bd09db77504ab71b1e7b5e0583ac5de962ab06e3c2301020c
+        checksum/config: e549790af138794b1ac5bbe561183a973d1fd4f25d76e890e05382e130eee672
       labels:
         app: fm-todo-app-main-frontend
     spec:
@@ -191,7 +191,7 @@ spec:
       name: db-data-v5
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: nutanix-volume
+      storageClassName: managed-csi
       resources:
         requests:
           storage: 1Gi
@@ -202,9 +202,9 @@ kind: Ingress
 metadata:
   name: fm-todo-app-main-ingress
 spec:
-  ingressClassName: nginx
+  ingressClassName: webapprouting.kubernetes.azure.com
   rules:
-  - host: "fm-todo-app-dev-main.serit.dev"
+  - host: "fm-todo-app-dev-main.vhovet.com"
     http:
       paths:
       - path: /

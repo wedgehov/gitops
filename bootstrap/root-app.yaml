@@ -12,10 +12,6 @@ spec:
         wave: "-10" # Deploy ArgoCD first
         path: rendered-manifests/dev/platform/argocd
         namespace: argocd
-      - name: cloudflare-tunnel
-        wave: "0" # Deploy after core platform components
-        path: rendered-manifests/dev/platform/cloudflare-tunnel
-        namespace: cloudflared
       - name: kube-prometheus-stack
         wave: "-5" # Deploy after ArgoCD but before other apps
         path: rendered-manifests/dev/platform/kube-prometheus-stack

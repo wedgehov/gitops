@@ -21,7 +21,7 @@ This means that to add or remove an application from the cluster, you simply add
 
 This repository avoids the **monolithic chart** pattern, where one giant Helm chart contains templates for many different applications. Instead, we use a more modern and scalable **One-Chart-Per-App** approach, which has several key benefits:
 
-*   **Modularity & Decoupling**: Each application (e.g., `todo-app`, `cloudflare-tunnel`) is its own self-contained Helm chart. You can update one application without any risk of affecting another.
+*   **Modularity & Decoupling**: Each application (e.g., `todo-app`, `link-sharing-app`) is its own self-contained Helm chart. You can update one application without any risk of affecting another.
 *   **Simplicity & Clarity**: Each chart is small, focused, and easy to understand. Its `values.yaml` file only contains configuration relevant to that specific application.
 *   **Leveraging the Community**: For common platform tools, we can point an Argo CD `Application` directly to official, community-maintained Helm charts, saving a massive amount of time and effort.
 
@@ -39,14 +39,17 @@ The repository is organized to cleanly separate concerns: application templates 
     ├── bootstrap/
     │   └── root-app.yaml
     ├── charts/
-    │   ├── cloudflare-tunnel/
-    │   └── todo-app/
+    │   ├── todo-app/
+    │   ├── fm-todo-app/
+    │   └── link-sharing-app/
     ├── rendered-manifests/
     │   └── dev/
     │       ├── platform/
     │       │   ├── argocd/
     │       │   │   └── rendered.yaml
-    │       │   └── cloudflare-tunnel/
+    │       │   ├── kube-prometheus-stack/
+    │       │   │   └── rendered.yaml
+    │       │   └── tempo/
     │       │       └── rendered.yaml
     │       └── user/
     │           └── todo-app/
@@ -54,7 +57,8 @@ The repository is organized to cleanly separate concerns: application templates 
     ├── values/
     │   ├── platform/
     │   │   ├── argocd-dev.yaml
-    │   │   └── dev.yaml
+    │   │   ├── kube-prometheus-stack-dev.yaml
+    │   │   └── tempo-dev.yaml
     │   └── user/
     │       └── todo-app/
     │           └── dev.yaml
@@ -103,17 +107,15 @@ This is the one-time process to set up a new cluster and connect it to this GitO
 
 ### Prerequisites
 *   `kubectl` configured to point to your target cluster.
-*   `just` installed (`brew install just` or similar).
-*   The Nutanix CSI driver must be manually installed on the cluster for Persistent Volume Claims to work.
-*   An Ingress controller (like NGINX) must be installed and configured on the cluster. The `kube-prometheus-stack` values file assumes an `ingressClassName` of `nginx`.
+*   `just` and `helm` installed (`brew install just helm` or similar).
+*   A Kubernetes cluster with Argo CD prerequisites available (for AKS this means App Routing enabled).
+*   A valid StorageClass for PVC-backed workloads (this repo defaults to `managed-csi`).
 
 ### Manual Dependencies (The "Almost" in GitOps)
 
-This repository follows GitOps principles, but with a few exceptions that make it an "Almost GitOps" setup for now. The following components must be managed manually on the cluster:
+This repository follows GitOps principles, but with a few exceptions that make it an "Almost GitOps" setup for now. The following components must still be managed manually on the cluster:
 
-1.  **Nutanix CSI Driver**: The storage driver that allows Kubernetes to create `PersistentVolume`s is a prerequisite and is not currently managed by this repository.
-
-2.  **Secrets**: All secrets are managed manually and are not stored in Git. Before bootstrapping, you must create the necessary secrets on the cluster.
+1.  **Secrets**: All secrets are managed manually and are not stored in Git. Before bootstrapping, you must create the necessary secrets on the cluster.
 
     *   **Example: Creating the PostgreSQL secret for `todo-app`**:
         ~~~bash
@@ -134,14 +136,13 @@ This repository follows GitOps principles, but with a few exceptions that make i
           -n monitoring
         ~~~
 
-    *   **Example: Creating the Cloudflare Tunnel secret**:
+    *   **Example: Creating a GHCR image pull secret (for private images)**:
         ~~~bash
-        # Ensure the cloudflared namespace exists
-        kubectl create ns cloudflared
-        # Create the secret from your downloaded JSON key file
-        kubectl create secret generic cloudflared-tunnel-credentials \
-          --from-file=credentials.json=/path/to/your/tunnel-credentials.json \
-          -n cloudflared
+        kubectl create secret docker-registry ghcr-credentials \
+          --namespace link-sharing-app-dev \
+          --docker-server=ghcr.io \
+          --docker-username <github-username> \
+          --docker-password '<PAT_with_read:packages>'
         ~~~
 
 ### Initial Bootstrap Workflow
@@ -173,7 +174,7 @@ This repository follows GitOps principles, but with a few exceptions that make i
     ~~~
 
 5.  **Verify**:
-    *   Open the Argo CD UI. You should see the `root` application, which will in turn create the `argocd`, `cloudflare-tunnel`, and `todo-app-dev` applications.
+    *   Open the Argo CD UI. You should see the `root` application, which will in turn create platform and user applications such as `argocd`, `kube-prometheus-stack`, `tempo-dev`, and `todo-app-dev`.
 
 ### Re-bootstrapping and Upgrading Argo CD
 
@@ -204,8 +205,8 @@ Because Argo CD is managed by itself as a child application, upgrading it is a s
  This example shows how to add a new application (`blog-app`) that uses a **custom Helm chart** from the `charts/` directory.
 
  1.  **Create Chart**: Copy an existing chart (e.g., `charts/todo-app`) to `charts/blog-app` and modify its templates.
- 2.  **Create Values**: Create `values/user/blog-app/dev.yaml` with its specific configuration (e.g., `ingress.host: blog.dev.vegard.io`).
- 3.  **Update `justfile.sh`**:
+ 2.  **Create Values**: Create `values/user/blog-app/dev.yaml` with its specific configuration (e.g., `ingress.host: blog-dev.vhovet.com`).
+ 3.  **Update `justfile`**:
      *   Add a `render-blog-app-dev` command.
      *   Add `render-blog-app-dev` to the `render-all-dev` meta-command.
  4.  **Update `ApplicationSet`**: Add a new entry for `blog-app` to the `elements` list in `bootstrap/root-app.yaml`.
@@ -224,7 +225,7 @@ Because Argo CD is managed by itself as a child application, upgrading it is a s
 
  1.  **Create Values File**: Create a new values file at `values/platform/cert-manager-dev.yaml` to configure the public chart.
 
- 2.  **Update `justfile.sh`**: Add a new render command that pulls the public chart and templates it with your custom values.
+ 2.  **Update `justfile`**: Add a new render command that pulls the public chart and templates it with your custom values.
      *   Add variables for the chart repository and version at the top.
      *   Create a `render-cert-manager-dev` command.
      *   Add the new command to the `render-all-dev` meta-command.
@@ -289,5 +290,5 @@ To evolve this repo into *true* GitOps—where Git is the single source of t
    * **Sealed Secrets:** Kubernetes controller decrypts secrets that are stored *encrypted* in Git using the cluster’s public key.
    * **External Secrets Operator (ESO):** Manifests reference secrets in AWS Secrets Manager, Azure Key Vault, HashiCorp Vault, etc.; ESO pulls them at runtime.
 
-2. **Declarative CSI Driver Management**
-   The Nutanix CSI driver, currently a manual prerequisite, should be treated as a platform app: locate / author a Helm chart, then add it to the `ApplicationSet` so the entire storage layer is defined in Git as well.
+2. **Declarative Cluster Prerequisites**
+   Keep moving cluster prerequisites into declarative workflows where possible (for example, DNS and certificate automation, and secrets from an external secret manager) so fewer manual steps are required at bootstrap time.

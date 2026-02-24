@@ -24,4 +24,4 @@ service:
 persistence:
   enabled: true
   size: 10Gi
-  storageClassName: nutanix-volume
+  storageClassName: managed-csi

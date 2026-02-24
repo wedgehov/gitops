@@ -10,13 +10,13 @@ imagePullSecretName: ""
 
 frontend:
   image:
-    repository: ghcr.io/serit/link-sharing-app/frontend
+    repository: ghcr.io/wedgehov/link-sharing-app/frontend
     pullPolicy: IfNotPresent
     tag: "" # Defaults to .Values.imageTag
 
 backend:
   image:
-    repository: ghcr.io/serit/link-sharing-app/backend
+    repository: ghcr.io/wedgehov/link-sharing-app/backend
     pullPolicy: IfNotPresent
     tag: "" # Defaults to .Values.imageTag
   aspnetcoreEnvironment: "Production"
@@ -30,7 +30,7 @@ database:
 
 ingress:
   enabled: true
-  className: nginx
+  className: webapprouting.kubernetes.azure.com
   host: link-sharing-app.example.com
 
 resources: {}
@@ -42,6 +42,6 @@ networkPolicy:
 serviceMonitor:
   enabled: true
 
-storageClassName: nutanix-volume
+storageClassName: managed-csi
 
 

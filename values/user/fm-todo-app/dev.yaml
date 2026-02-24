@@ -7,7 +7,7 @@ backend:
   aspnetcoreEnvironment: "Development"
 
 ingress:
-  host: fm-todo-app-dev.serit.dev
+  host: fm-todo-app-dev.vhovet.com
 
 networkPolicy:
   enabled: true

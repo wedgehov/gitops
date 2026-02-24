@@ -75,7 +75,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 47ccf2da7cc28bfc7554465352a1aa08ccc1c7b293911fb44246814535d5f722
+        checksum/config: 74fdcbcc0bfdc26ed6e6d27541c4ee65bbf5774d6290de5583e87c9d06764b0a
       labels:
         app: link-sharing-app-dev-backend
     spec:
@@ -83,7 +83,7 @@ spec:
         - name: ghcr-credentials
       containers:
       - name: backend
-        image: "ghcr.io/serit/link-sharing-app/backend:v0.1.1"
+        image: "ghcr.io/wedgehov/link-sharing-app/backend:v0.1.1"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
@@ -134,7 +134,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 47ccf2da7cc28bfc7554465352a1aa08ccc1c7b293911fb44246814535d5f722
+        checksum/config: 74fdcbcc0bfdc26ed6e6d27541c4ee65bbf5774d6290de5583e87c9d06764b0a
       labels:
         app: link-sharing-app-dev-frontend
     spec:
@@ -142,7 +142,7 @@ spec:
         - name: ghcr-credentials
       containers:
       - name: frontend
-        image: "ghcr.io/serit/link-sharing-app/frontend:v0.1.1"
+        image: "ghcr.io/wedgehov/link-sharing-app/frontend:v0.1.1"
         imagePullPolicy: IfNotPresent
         env:
         - name: API_URL
@@ -188,7 +188,7 @@ spec:
       name: db-data-v1
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: nutanix-volume
+      storageClassName: managed-csi
       resources:
         requests:
           storage: 1Gi
@@ -199,9 +199,9 @@ kind: Ingress
 metadata:
   name: link-sharing-app-dev-ingress
 spec:
-  ingressClassName: nginx
+  ingressClassName: webapprouting.kubernetes.azure.com
   rules:
-  - host: "link-sharing-app-dev.serit.dev"
+  - host: "link-sharing-app-dev.vhovet.com"
     http:
       paths:
       - path: /

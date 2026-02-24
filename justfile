@@ -8,7 +8,7 @@ TEMPO_CHART_VERSION := "1.7.1"
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-platform-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-dev
+render-all-dev: render-argocd-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-dev
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -31,12 +31,6 @@ bootstrap:
 	# 5. Apply all bootstrap resources
 	@echo "--> Applying bootstrap ApplicationSet..."
 	@kubectl apply -n argocd -f bootstrap/
-
-# Render platform components for the 'dev' environment
-render-platform-dev:
-	mkdir -p rendered-manifests/dev/platform/cloudflare-tunnel
-	helm template cloudflare-tunnel ./charts/cloudflare-tunnel --namespace cloudflared -f ./values/platform/dev.yaml > ./rendered-manifests/dev/platform/cloudflare-tunnel/rendered.yaml
-	echo "Rendered cloudflare-tunnel for dev."
 
 # Install Prometheus CRDs imperatively. This is a prerequisite for the monitoring stack.
 install-prometheus-crds:

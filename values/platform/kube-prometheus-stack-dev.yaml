@@ -42,9 +42,9 @@ grafana:
 
   ingress:
     enabled: true
-    ingressClassName: "nginx" # Make sure this matches your Ingress Controller
+    ingressClassName: "webapprouting.kubernetes.azure.com"
     hosts:
-      - grafana-dev.serit.dev
+      - grafana-dev.vhovet.com
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

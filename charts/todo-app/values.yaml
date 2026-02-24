@@ -26,7 +26,7 @@ database:
 
 ingress:
   enabled: true
-  className: nginx
+  className: webapprouting.kubernetes.azure.com
   host: todo-app.example.com # A generic placeholder
 
 resources: {}
@@ -35,4 +35,4 @@ databaseResources: {}
 networkPolicy:
   enabled: false # Set to true in environment values to enable
 
-storageClassName: nutanix-volume
+storageClassName: managed-csi
