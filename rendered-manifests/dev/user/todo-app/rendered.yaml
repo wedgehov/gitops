@@ -162,6 +162,8 @@ spec:
           value: "todo_user"
         - name: POSTGRES_DB
           value: "todo_db"
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:

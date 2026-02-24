@@ -170,6 +170,9 @@ spec:
       containers:
       - name: database
         image: "postgres:16-alpine"
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         envFrom:
         - secretRef:
             name: link-sharing-app-db-secret

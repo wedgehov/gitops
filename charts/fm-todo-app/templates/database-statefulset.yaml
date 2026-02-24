@@ -28,6 +28,9 @@ spec:
       containers:
       - name: database
         image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         envFrom:
         - secretRef:
             name: {{ .Values.database.secretName }}
