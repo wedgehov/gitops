@@ -75,7 +75,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 74fdcbcc0bfdc26ed6e6d27541c4ee65bbf5774d6290de5583e87c9d06764b0a
+        checksum/config: 2f79e8118e616087a4bd5929ad52cecc86ab06739cbeee83ead96b7baadb1cae
       labels:
         app: link-sharing-app-dev-backend
     spec:
@@ -106,7 +106,7 @@ spec:
         - containerPort: 8080
         resources:
           requests:
-            cpu: 100m
+            cpu: 50m
             memory: 128Mi
         readinessProbe:
           httpGet:
@@ -134,7 +134,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 74fdcbcc0bfdc26ed6e6d27541c4ee65bbf5774d6290de5583e87c9d06764b0a
+        checksum/config: 2f79e8118e616087a4bd5929ad52cecc86ab06739cbeee83ead96b7baadb1cae
       labels:
         app: link-sharing-app-dev-frontend
     spec:
@@ -178,7 +178,7 @@ spec:
           name: postgres
         resources:
           requests:
-            cpu: 100m
+            cpu: 50m
             memory: 256Mi
         volumeMounts:
         - name: db-data-v1

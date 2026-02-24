@@ -18,7 +18,7 @@ networkPolicy:
 # the app from starving other processes on the node.
 resources:
   requests:
-    cpu: 100m
+    cpu: 50m
     memory: 128Mi
   limits:
     cpu: 250m
@@ -26,7 +26,7 @@ resources:
 
 databaseResources:
   requests:
-    cpu: 100m
+    cpu: 50m
     memory: 256Mi
   limits:
     cpu: 500m

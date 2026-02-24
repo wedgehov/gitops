@@ -78,7 +78,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: e549790af138794b1ac5bbe561183a973d1fd4f25d76e890e05382e130eee672
+        checksum/config: 3e27a118a0a8cfb407c49e1b3fbce6db8d88fca883521b34afe284c2004a98d8
       labels:
         app: fm-todo-app-main-backend
     spec:
@@ -111,7 +111,7 @@ spec:
         - containerPort: 8080
         resources:
           requests:
-            cpu: 100m
+            cpu: 50m
             memory: 128Mi
         readinessProbe:
           httpGet:
@@ -139,7 +139,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: e549790af138794b1ac5bbe561183a973d1fd4f25d76e890e05382e130eee672
+        checksum/config: 3e27a118a0a8cfb407c49e1b3fbce6db8d88fca883521b34afe284c2004a98d8
       labels:
         app: fm-todo-app-main-frontend
     spec:
@@ -181,7 +181,7 @@ spec:
           name: postgres
         resources:
           requests:
-            cpu: 100m
+            cpu: 50m
             memory: 256Mi
         volumeMounts:
         - name: db-data-v5
