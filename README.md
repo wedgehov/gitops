@@ -123,11 +123,13 @@ This is the one-time process to set up a new cluster and connect it to this GitO
 
 This repository now uses **External Secrets Operator (ESO) + Azure Key Vault** for runtime secret delivery. That means secret values are not committed to Git, but there are still a few one-time cloud/bootstrap steps.
 
+Secret mappings are centralized in `static-manifests/platform/secrets-config/` using `ClusterSecretStore` and `ClusterExternalSecret` resources.
+
 1.  **Azure Key Vault + Workload Identity (one-time setup)**:
     *   Create a Key Vault, a managed identity for ESO, and a federated credential to your AKS OIDC issuer.
     *   Grant the managed identity `Key Vault Secrets User` on the Key Vault.
     *   Set your own identifiers in these files:
-        *   `static-manifests/platform/external-secrets/clustersecretstore-azure-keyvault.yaml`
+        *   `static-manifests/platform/secrets-config/clustersecretstore-azure-keyvault.yaml`
             *   `vaultUrl`
             *   `tenantId`
         *   `values/platform/external-secrets-dev.yaml`
@@ -142,8 +144,7 @@ This repository now uses **External Secrets Operator (ESO) + Azure Key Vault** f
 
 2.  **Seed required secret values in Azure Key Vault**:
     *   At minimum, create the keys referenced by:
-        *   `values/platform/monitoring-secrets-dev.yaml`
-        *   `values/user-secrets/*.yaml`
+        *   `static-manifests/platform/secrets-config/clusterexternalsecret-*.yaml`
     *   Example:
         ~~~bash
         az keyvault secret set --vault-name <kv-name> --name todo-app-dev-postgres-password --value '<strong-password>'

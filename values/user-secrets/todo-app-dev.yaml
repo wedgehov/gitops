@@ -1,6 +1,0 @@
-target:
-  name: todo-app-db-secret
-
-data:
-  - secretKey: postgres-password
-    remoteKey: todo-app-dev-postgres-password

@@ -10,7 +10,7 @@ EXTERNAL_SECRETS_CHART_VERSION := "2.0.1"
 
 # Meta-command to render all components for the 'dev' environment.
 # This command simply calls the other, more specific render commands.
-render-all-dev: render-argocd-dev render-external-secrets-dev render-monitoring-secrets-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev-secrets render-fm-todo-app-dev-secrets render-fm-todo-app-main-secrets render-link-sharing-app-main-secrets render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-main
+render-all-dev: render-argocd-dev render-external-secrets-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-main
 
 # Bootstrap the cluster by applying the root Argo CD application
 bootstrap:
@@ -64,15 +64,6 @@ render-external-secrets-dev:
 	helm template external-secrets external-secrets/external-secrets --version {{EXTERNAL_SECRETS_CHART_VERSION}} --namespace external-secrets -f ./values/platform/external-secrets-dev.yaml > ./rendered-manifests/dev/platform/external-secrets/rendered.yaml
 	echo "Rendered external-secrets for dev."
 
-# Helper: render one ExternalSecret manifest from a values file.
-render-external-secret release namespace values_file output_dir:
-	mkdir -p {{output_dir}}
-	helm template {{release}} ./charts/external-secret --namespace {{namespace}} -f {{values_file}} > {{output_dir}}/rendered.yaml
-	echo "Rendered {{release}} secrets."
-
-render-monitoring-secrets-dev:
-	@just render-external-secret monitoring-secrets monitoring ./values/platform/monitoring-secrets-dev.yaml ./rendered-manifests/dev/platform/monitoring-secrets
-
 render-argocd-dev:
 	mkdir -p rendered-manifests/dev/platform/argocd
 	helm repo add argo {{ARGOCD_HELM_REPO}} --force-update
@@ -95,12 +86,6 @@ render-fm-todo-app-dev:
 	helm template fm-todo-app ./charts/fm-todo-app --namespace fm-todo-app-dev -f ./values/user/fm-todo-app/dev.yaml > ./rendered-manifests/dev/user/fm-todo-app/rendered.yaml
 	echo "Rendered fm-todo-app for dev."
 
-render-todo-app-dev-secrets:
-	@just render-external-secret todo-app-dev-secrets todo-app-dev ./values/user-secrets/todo-app-dev.yaml ./rendered-manifests/dev/user-secrets/todo-app-dev
-
-render-fm-todo-app-dev-secrets:
-	@just render-external-secret fm-todo-app-dev-secrets fm-todo-app-dev ./values/user-secrets/fm-todo-app-dev.yaml ./rendered-manifests/dev/user-secrets/fm-todo-app-dev
-
 render-tip-calculator-app-main:
 	mkdir -p rendered-manifests/main/user/tip-calculator-app
 	helm template tip-calculator-app-main ./charts/tip-calculator-app --namespace tip-calculator-app-main -f ./values/user/tip-calculator-app/main.yaml > ./rendered-manifests/main/user/tip-calculator-app/rendered.yaml
@@ -111,13 +96,7 @@ render-fm-todo-app-main:
 	helm template fm-todo-app-main ./charts/fm-todo-app --namespace fm-todo-app-main -f ./values/user/fm-todo-app/main.yaml > ./rendered-manifests/main/user/fm-todo-app/rendered.yaml
 	echo "Rendered fm-todo-app for main."
 
-render-fm-todo-app-main-secrets:
-	@just render-external-secret fm-todo-app-main-secrets fm-todo-app-main ./values/user-secrets/fm-todo-app-main.yaml ./rendered-manifests/main/user-secrets/fm-todo-app-main
-
 render-link-sharing-app-main:
 	mkdir -p rendered-manifests/main/user/link-sharing-app
 	helm template link-sharing-app-main ./charts/link-sharing-app --namespace link-sharing-app-main -f ./values/user/link-sharing-app/main.yaml > ./rendered-manifests/main/user/link-sharing-app/rendered.yaml
 	echo "Rendered link-sharing-app for main."
-
-render-link-sharing-app-main-secrets:
-	@just render-external-secret link-sharing-app-main-secrets link-sharing-app-main ./values/user-secrets/link-sharing-app-main.yaml ./rendered-manifests/main/user-secrets/link-sharing-app-main

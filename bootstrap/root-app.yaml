@@ -16,13 +16,9 @@ spec:
         wave: "-8" # Deploy secret controller before secret resources
         path: rendered-manifests/dev/platform/external-secrets
         namespace: external-secrets
-      - name: external-secrets-store
-        wave: "-7" # Create ClusterSecretStore after controller is ready
-        path: static-manifests/platform/external-secrets
-        namespace: external-secrets
-      - name: monitoring-secrets
-        wave: "-6" # Grafana credentials must exist before monitoring stack
-        path: rendered-manifests/dev/platform/monitoring-secrets
+      - name: secrets-config
+        wave: "-7" # Apply shared secret store and secret mappings once
+        path: static-manifests/platform/secrets-config
         namespace: monitoring
       - name: cert-manager-issuers
         wave: "-6" # Deploy before app ingresses request certificates
@@ -41,23 +37,6 @@ spec:
         path: static-manifests/user-dashboards
         # This application deploys its contents into the 'monitoring' namespace.
         namespace: monitoring
-      # User Secret Applications
-      - name: todo-app-dev-secrets
-        wave: "9" # Deploy user secrets before user applications
-        path: rendered-manifests/dev/user-secrets/todo-app-dev
-        namespace: todo-app-dev
-      - name: fm-todo-app-dev-secrets
-        wave: "9" # Deploy user secrets before user applications
-        path: rendered-manifests/dev/user-secrets/fm-todo-app-dev
-        namespace: fm-todo-app-dev
-      - name: fm-todo-app-main-secrets
-        wave: "9" # Deploy user secrets before user applications
-        path: rendered-manifests/main/user-secrets/fm-todo-app-main
-        namespace: fm-todo-app-main
-      - name: link-sharing-app-main-secrets
-        wave: "9" # Deploy user secrets before user applications
-        path: rendered-manifests/main/user-secrets/link-sharing-app-main
-        namespace: link-sharing-app-main
       # User Applications
       - name: todo-app-dev
         wave: "10" # Deploy user apps last
