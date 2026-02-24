@@ -14,7 +14,7 @@ backend:
 imagePullSecretName: "ghcr-credentials"
 
 ingress:
-  host: link-sharing-app-dev-main.vhovet.com
+  host: link-sharing-app-main.vhovet.com
 
 networkPolicy:
   enabled: true

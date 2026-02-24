@@ -78,7 +78,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 3e27a118a0a8cfb407c49e1b3fbce6db8d88fca883521b34afe284c2004a98d8
+        checksum/config: b02038b0b327c92cd0536a95eca5175d5705c04ed90959a93e358c734647846a
       labels:
         app: fm-todo-app-main-backend
     spec:
@@ -139,7 +139,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 3e27a118a0a8cfb407c49e1b3fbce6db8d88fca883521b34afe284c2004a98d8
+        checksum/config: b02038b0b327c92cd0536a95eca5175d5705c04ed90959a93e358c734647846a
       labels:
         app: fm-todo-app-main-frontend
     spec:
@@ -157,7 +157,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: fm-todo-app-main-db-v5
+  name: fm-todo-app-main-db
 spec:
   serviceName: fm-todo-app-main-db
   replicas: 1
@@ -187,11 +187,11 @@ spec:
             cpu: 50m
             memory: 256Mi
         volumeMounts:
-        - name: db-data-v5
+        - name: db-data
           mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
   - metadata:
-      name: db-data-v5
+      name: db-data
     spec:
       accessModes: ["ReadWriteOnce"]
       storageClassName: managed-csi
@@ -211,10 +211,10 @@ spec:
   ingressClassName: webapprouting.kubernetes.azure.com
   tls:
   - hosts:
-    - "fm-todo-app-dev-main.vhovet.com"
+    - "fm-todo-app-main.vhovet.com"
     secretName: fm-todo-app-main-tls
   rules:
-  - host: "fm-todo-app-dev-main.vhovet.com"
+  - host: "fm-todo-app-main.vhovet.com"
     http:
       paths:
       - path: /

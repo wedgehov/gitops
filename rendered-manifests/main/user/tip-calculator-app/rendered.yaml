@@ -55,10 +55,10 @@ spec:
   ingressClassName: webapprouting.kubernetes.azure.com
   tls:
   - hosts:
-    - "tip-calculator-dev-main.vhovet.com"
+    - "tip-calculator-main.vhovet.com"
     secretName: tip-calculator-app-main-tls
   rules:
-  - host: "tip-calculator-dev-main.vhovet.com"
+  - host: "tip-calculator-main.vhovet.com"
     http:
       paths:
       - path: /

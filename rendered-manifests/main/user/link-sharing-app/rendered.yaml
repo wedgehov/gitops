@@ -75,7 +75,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 4f00f55e546195a769d238828822a0c4c59c6de1da105575eac2c2791a1553c6
+        checksum/config: 1fee2590af99e57e7d1c691ca6364032dbb9b664741c940ee26e86780b7590d8
       labels:
         app: link-sharing-app-main-backend
     spec:
@@ -134,7 +134,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 4f00f55e546195a769d238828822a0c4c59c6de1da105575eac2c2791a1553c6
+        checksum/config: 1fee2590af99e57e7d1c691ca6364032dbb9b664741c940ee26e86780b7590d8
       labels:
         app: link-sharing-app-main-frontend
     spec:
@@ -154,7 +154,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: link-sharing-app-main-db-v1
+  name: link-sharing-app-main-db
 spec:
   serviceName: link-sharing-app-main-db
   replicas: 1
@@ -184,11 +184,11 @@ spec:
             cpu: 50m
             memory: 256Mi
         volumeMounts:
-        - name: db-data-v1
+        - name: db-data
           mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
   - metadata:
-      name: db-data-v1
+      name: db-data
     spec:
       accessModes: ["ReadWriteOnce"]
       storageClassName: managed-csi
@@ -208,10 +208,10 @@ spec:
   ingressClassName: webapprouting.kubernetes.azure.com
   tls:
   - hosts:
-    - "link-sharing-app-dev-main.vhovet.com"
+    - "link-sharing-app-main.vhovet.com"
     secretName: link-sharing-app-main-tls
   rules:
-  - host: "link-sharing-app-dev-main.vhovet.com"
+  - host: "link-sharing-app-main.vhovet.com"
     http:
       paths:
       - path: /
