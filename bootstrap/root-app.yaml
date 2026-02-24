@@ -12,6 +12,10 @@ spec:
         wave: "-10" # Deploy ArgoCD first
         path: rendered-manifests/dev/platform/argocd
         namespace: argocd
+      - name: cert-manager-issuers
+        wave: "-6" # Deploy before app ingresses request certificates
+        path: static-manifests/platform/cert-manager
+        namespace: cert-manager
       - name: kube-prometheus-stack
         wave: "-5" # Deploy after ArgoCD but before other apps
         path: rendered-manifests/dev/platform/kube-prometheus-stack

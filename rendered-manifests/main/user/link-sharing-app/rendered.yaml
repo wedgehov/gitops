@@ -201,8 +201,15 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: link-sharing-app-main-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   ingressClassName: webapprouting.kubernetes.azure.com
+  tls:
+  - hosts:
+    - "link-sharing-app-dev-main.vhovet.com"
+    secretName: link-sharing-app-main-tls
   rules:
   - host: "link-sharing-app-dev-main.vhovet.com"
     http:

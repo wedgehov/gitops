@@ -198,6 +198,8 @@ kind: Ingress
 metadata:
   name: todo-app-todo-app-ingress
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     # Increase timeouts for long-lived SignalR WebSocket connections
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
@@ -205,6 +207,10 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
   ingressClassName: webapprouting.kubernetes.azure.com
+  tls:
+  - hosts:
+    - "todo-app-dev.vhovet.com"
+    secretName: todo-app-tls
   rules:
   - host: "todo-app-dev.vhovet.com"
     http:
