@@ -1,0 +1,237 @@
+---
+# Source: link-sharing-app/templates/network-policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: link-sharing-app-main-db-access
+spec:
+  podSelector:
+    matchLabels:
+      app: link-sharing-app-main-db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: link-sharing-app-main-backend
+    ports:
+    - protocol: TCP
+      port: 5432
+---
+# Source: link-sharing-app/templates/backend-deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: link-sharing-app-main-backend
+  labels:
+    app: link-sharing-app-main-backend
+    # This label is required for the ServiceMonitor to select this Service.
+    release: kube-prometheus-stack
+spec:
+  type: ClusterIP
+  # The port must be named for the ServiceMonitor to reference it.
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  selector:
+    app: link-sharing-app-main-backend
+---
+# Source: link-sharing-app/templates/database-statefulset.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: link-sharing-app-main-db
+spec:
+  ports:
+    - port: 5432
+  clusterIP: None
+  selector:
+    app: link-sharing-app-main-db
+---
+# Source: link-sharing-app/templates/frontend-deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: link-sharing-app-main-frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: link-sharing-app-main-frontend
+---
+# Source: link-sharing-app/templates/backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: link-sharing-app-main-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: link-sharing-app-main-backend
+  template:
+    metadata:
+      annotations:
+        checksum/config: 4f00f55e546195a769d238828822a0c4c59c6de1da105575eac2c2791a1553c6
+      labels:
+        app: link-sharing-app-main-backend
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+      - name: backend
+        image: "ghcr.io/wedgehov/link-sharing-app/backend:latest"
+        imagePullPolicy: Always
+        env:
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=link-sharing-app-main-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+        # OTEL configuration to match platform defaults
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://tempo-dev.monitoring.svc.cluster.local:4317"
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          value: "grpc"
+        - name: OTEL_SERVICE_NAME
+          value: "link-sharing-app-backend"
+        - name: OTEL_TRACES_SAMPLER
+          value: "always_on"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        envFrom:
+        - secretRef:
+            name: link-sharing-app-db-secret
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+# Source: link-sharing-app/templates/frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: link-sharing-app-main-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: link-sharing-app-main-frontend
+  template:
+    metadata:
+      annotations:
+        checksum/config: 4f00f55e546195a769d238828822a0c4c59c6de1da105575eac2c2791a1553c6
+      labels:
+        app: link-sharing-app-main-frontend
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+      - name: frontend
+        image: "ghcr.io/wedgehov/link-sharing-app/frontend:latest"
+        imagePullPolicy: Always
+        env:
+        - name: API_URL
+          value: "http://link-sharing-app-main-backend:8080"
+        ports:
+        - containerPort: 80
+---
+# Source: link-sharing-app/templates/database-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: link-sharing-app-main-db-v1
+spec:
+  serviceName: link-sharing-app-main-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: link-sharing-app-main-db
+  template:
+    metadata:
+      labels:
+        app: link-sharing-app-main-db
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: database
+        image: "postgres:16-alpine"
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        envFrom:
+        - secretRef:
+            name: link-sharing-app-db-secret
+        ports:
+        - containerPort: 5432
+          name: postgres
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+        volumeMounts:
+        - name: db-data-v1
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: db-data-v1
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: managed-csi
+      resources:
+        requests:
+          storage: 1Gi
+---
+# Source: link-sharing-app/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: link-sharing-app-main-ingress
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+  - host: "link-sharing-app-dev-main.vhovet.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: link-sharing-app-main-frontend
+            port:
+              number: 80
+---
+# Source: link-sharing-app/templates/backend-servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: link-sharing-app-main-backend
+  labels:
+    # This label allows Prometheus to discover the ServiceMonitor
+    release: kube-prometheus-stack
+spec:
+  jobLabel: app
+  selector:
+    matchLabels:
+      app: link-sharing-app-main-backend
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s
+  namespaceSelector:
+    matchNames:
+    - link-sharing-app-main

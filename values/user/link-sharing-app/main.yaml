@@ -1,16 +1,20 @@
-# Overrides for the 'link-sharing-app' in the 'dev' environment
+# Overrides for the 'link-sharing-app' from the 'main' branch
 
-# Deterministic pre-release tag for early deployment
-imageTag: "v0.1.1"
+frontend:
+  image:
+    pullPolicy: Always
+    tag: "latest"
+
+backend:
+  image:
+    pullPolicy: Always
+    tag: "latest"
 
 # Private GHCR pull secret
 imagePullSecretName: "ghcr-credentials"
 
-backend:
-  aspnetcoreEnvironment: "Development"
-
 ingress:
-  host: link-sharing-app-dev.vhovet.com
+  host: link-sharing-app-dev-main.vhovet.com
 
 networkPolicy:
   enabled: true
@@ -24,5 +28,3 @@ databaseResources:
   requests:
     cpu: 50m
     memory: 256Mi
-
-

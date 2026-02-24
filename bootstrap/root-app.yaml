@@ -38,10 +38,6 @@ spec:
         wave: "10" # Deploy user apps last
         path: rendered-manifests/dev/user/fm-todo-app
         namespace: fm-todo-app-dev
-      - name: link-sharing-app-dev
-        wave: "10" # Deploy user apps last
-        path: rendered-manifests/dev/user/link-sharing-app
-        namespace: link-sharing-app-dev
       # User Applications from 'main' branch
       - name: tip-calculator-app-main
         wave: "11"
@@ -51,6 +47,10 @@ spec:
         wave: "11"
         path: rendered-manifests/main/user/fm-todo-app
         namespace: fm-todo-app-main
+      - name: link-sharing-app-main
+        wave: "11"
+        path: rendered-manifests/main/user/link-sharing-app
+        namespace: link-sharing-app-main
   template:
     metadata:
       # The name of the generated Application comes from the 'name' field in the elements list above.

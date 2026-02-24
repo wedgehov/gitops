@@ -139,7 +139,7 @@ This repository follows GitOps principles, but with a few exceptions that make i
     *   **Example: Creating a GHCR image pull secret (for private images)**:
         ~~~bash
         kubectl create secret docker-registry ghcr-credentials \
-          --namespace link-sharing-app-dev \
+          --namespace link-sharing-app-main \
           --docker-server=ghcr.io \
           --docker-username <github-username> \
           --docker-password '<PAT_with_read:packages>'
@@ -266,19 +266,18 @@ Some applications pull their container images from a private GitHub Container Re
 
 3. Render, commit, and push the updated manifests. Argo CD will sync the changes.
 
-### Example: Link Sharing App (dev)
+### Example: Link Sharing App (main)
 
-- Values file: `values/user/link-sharing-app/dev.yaml`
-- Deterministic image tag (pre-release): `v0.1.0-alpha.1`
+- Values file: `values/user/link-sharing-app/main.yaml`
+- Image strategy: `latest` from the main branch with `pullPolicy: Always`
 - Render only this app:
   ~~~bash
-  just render-link-sharing-app-dev
-  git add rendered-manifests/dev/user/link-sharing-app/rendered.yaml
-  git commit -m "feat(link-sharing-app): render dev manifests"
+  just render-link-sharing-app-main
+  git add rendered-manifests/main/user/link-sharing-app/rendered.yaml
+  git commit -m "feat(link-sharing-app): render main manifests"
   git push
   ~~~
-
-Ensure images exist in GHCR with the configured tag before syncing.
+Ensure the private GHCR repository contains `latest` images before syncing.
 
 ## Path to True GitOps (TODO)
 
