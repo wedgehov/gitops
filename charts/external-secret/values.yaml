@@ -1,0 +1,13 @@
+nameOverride: ""
+
+refreshInterval: 1h
+
+secretStoreRef:
+  kind: ClusterSecretStore
+  name: azure-keyvault
+
+target:
+  name: ""
+  creationPolicy: Owner
+
+data: []

@@ -119,41 +119,39 @@ This is the one-time process to set up a new cluster and connect it to this GitO
 *   A Kubernetes cluster with Argo CD prerequisites available (for AKS this means App Routing enabled).
 *   A valid StorageClass for PVC-backed workloads (this repo defaults to `managed-csi`).
 
-### Manual Dependencies (The "Almost" in GitOps)
+### Manual Dependencies (Cloud Setup Still Required)
 
-This repository follows GitOps principles, but with a few exceptions that make it an "Almost GitOps" setup for now. The following components must still be managed manually on the cluster:
+This repository now uses **External Secrets Operator (ESO) + Azure Key Vault** for runtime secret delivery. That means secret values are not committed to Git, but there are still a few one-time cloud/bootstrap steps.
 
-1.  **Secrets**: All secrets are managed manually and are not stored in Git. Before bootstrapping, you must create the necessary secrets on the cluster.
-
-    *   **Example: Creating the PostgreSQL secret for `todo-app`**:
+1.  **Azure Key Vault + Workload Identity (one-time setup)**:
+    *   Create a Key Vault, a managed identity for ESO, and a federated credential to your AKS OIDC issuer.
+    *   Grant the managed identity `Key Vault Secrets User` on the Key Vault.
+    *   Set your own identifiers in these files:
+        *   `static-manifests/platform/external-secrets/clustersecretstore-azure-keyvault.yaml`
+            *   `vaultUrl`
+            *   `tenantId`
+        *   `values/platform/external-secrets-dev.yaml`
+            *   `serviceAccount.annotations.azure.workload.identity/client-id`
+    *   Fetch those values with:
         ~~~bash
-        # Note: The namespace (e.g., todo-app-dev) must exist first.
-        # The Argo CD Application manifest can create it with `syncOptions.CreateNamespace=true`.
-        kubectl create secret generic todo-app-db-secret \
-          --from-literal=postgres-password='YOUR_SECURE_DATABASE_PASSWORD' \
-          -n todo-app-dev
+        az keyvault show -n <kv-name> -g <resource-group> --query properties.vaultUri -o tsv
+        az account show --query tenantId -o tsv
+        az identity show -g <resource-group> -n <managed-identity-name> --query clientId -o tsv
+        ~~~
+    *   These are identifiers (not credentials), so keeping them in a public GitOps repository is acceptable.
+
+2.  **Seed required secret values in Azure Key Vault**:
+    *   At minimum, create the keys referenced by:
+        *   `values/platform/monitoring-secrets-dev.yaml`
+        *   `values/user-secrets/*.yaml`
+    *   Example:
+        ~~~bash
+        az keyvault secret set --vault-name <kv-name> --name todo-app-dev-postgres-password --value '<strong-password>'
+        az keyvault secret set --vault-name <kv-name> --name grafana-admin-user --value 'admin'
+        az keyvault secret set --vault-name <kv-name> --name grafana-admin-password --value '<strong-password>'
         ~~~
 
-    *   **Example: Creating the Grafana admin secret for `kube-prometheus-stack`**:
-        ~~~bash
-        # Note: The namespace (e.g., monitoring) must exist first.
-        # The 'just bootstrap' command handles this.
-        kubectl create secret generic kube-prometheus-stack-grafana \
-          --from-literal=admin-user=admin \
-          --from-literal=admin-password='YOUR_SECURE_GRAFANA_PASSWORD' \
-          -n monitoring
-        ~~~
-
-    *   **Example: Creating a GHCR image pull secret (for private images)**:
-        ~~~bash
-        kubectl create secret docker-registry ghcr-credentials \
-          --namespace link-sharing-app-main \
-          --docker-server=ghcr.io \
-          --docker-username <github-username> \
-          --docker-password '<PAT_with_read:packages>'
-        ~~~
-
-2.  **cert-manager installation**: cert-manager itself is currently installed once, manually, via Helm. After installation, this repo manages the shared `ClusterIssuer` declaratively from `static-manifests/platform/cert-manager/`.
+3.  **cert-manager installation**: cert-manager itself is currently installed once, manually, via Helm. After installation, this repo manages the shared `ClusterIssuer` declaratively from `static-manifests/platform/cert-manager/`.
 
     *   **Example: Installing cert-manager once per cluster**:
         ~~~bash
@@ -163,6 +161,15 @@ This repository follows GitOps principles, but with a few exceptions that make i
           --namespace cert-manager --create-namespace \
           --set crds.enabled=true
         ~~~
+
+4.  **GHCR image pull secrets for private images (if needed)**:
+    ~~~bash
+    kubectl create secret docker-registry ghcr-credentials \
+      --namespace link-sharing-app-main \
+      --docker-server=ghcr.io \
+      --docker-username <github-username> \
+      --docker-password '<PAT_with_read:packages>'
+    ~~~
 
 ### Initial Bootstrap Workflow
 
@@ -317,15 +324,16 @@ Some applications pull their container images from a private GitHub Container Re
   ~~~
 Ensure the private GHCR repository contains `latest` images before syncing.
 
-## Path to True GitOps (TODO)
+## GitOps Status and Next Improvements
 
-To evolve this repo into *true* GitOps—where Git is the single source of truth—several manual steps must be automated:
+This repository already uses declarative secret references via **External Secrets Operator (ESO)** and Azure Key Vault.
 
-1. **Declarative Secret Management**
-   Replace `kubectl create secret` with a Git‑friendly solution:
+Remaining manual parts are mostly cloud-account bootstrap concerns, such as:
 
-   * **Sealed Secrets:** Kubernetes controller decrypts secrets that are stored *encrypted* in Git using the cluster’s public key.
-   * **External Secrets Operator (ESO):** Manifests reference secrets in AWS Secrets Manager, Azure Key Vault, HashiCorp Vault, etc.; ESO pulls them at runtime.
+1. Creating cloud resources and IAM bindings (Key Vault, managed identity, federated credential, role assignments).
+2. Installing cluster prerequisites once (for example, cert-manager).
+3. Supplying secret values to the external secret manager (Azure Key Vault) out-of-band.
 
-2. **Declarative Cluster Prerequisites**
-   Keep moving cluster prerequisites into declarative workflows where possible (for example, DNS and certificate automation, and secrets from an external secret manager) so fewer manual steps are required at bootstrap time.
+For this portfolio repository, we currently commit non-secret Azure identifiers (for example `vaultUrl`, `tenantId`, and managed identity `clientId`) to keep setup simple and reproducible.
+
+While these values are not credentials, a stricter pattern for public templates is to keep placeholder values in the public repo and inject real environment-specific identifiers from a private overlay (or CI/CD/Argo CD parameter overrides). That approach improves reuse and environment isolation across teams and tenants.

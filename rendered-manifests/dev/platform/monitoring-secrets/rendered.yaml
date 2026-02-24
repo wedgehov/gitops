@@ -1,0 +1,22 @@
+---
+# Source: external-secret/templates/externalsecret.yaml
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kube-prometheus-stack-grafana
+  namespace: monitoring
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: azure-keyvault
+  target:
+    name: kube-prometheus-stack-grafana
+    creationPolicy: Owner
+  data:
+    - secretKey: admin-user
+      remoteRef:
+        key: grafana-admin-user
+    - secretKey: admin-password
+      remoteRef:
+        key: grafana-admin-password

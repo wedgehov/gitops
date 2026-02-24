@@ -1,0 +1,10 @@
+target:
+  name: fm-todo-app-db-secret
+
+data:
+  - secretKey: POSTGRES_USER
+    remoteKey: fm-todo-app-dev-postgres-user
+  - secretKey: POSTGRES_PASSWORD
+    remoteKey: fm-todo-app-dev-postgres-password
+  - secretKey: POSTGRES_DB
+    remoteKey: fm-todo-app-dev-postgres-db
