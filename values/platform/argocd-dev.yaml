@@ -4,3 +4,23 @@ configs:
   params:
     "server.insecure": true # Use this for simplicity in a dev environment. Allows HTTP access to the UI.
     "server.disable.auth": false # Ensures the local admin user is enabled for UI login.
+  cm:
+    # Public URL used by Argo CD for redirects and UI links.
+    url: https://argocd.vhovet.com
+
+server:
+  ingress:
+    enabled: true
+    ingressClassName: webapprouting.kubernetes.azure.com
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    hosts:
+      - argocd.vhovet.com
+    paths:
+      - /
+    pathType: Prefix
+    tls:
+      - secretName: argocd-server-tls
+        hosts:
+          - argocd.vhovet.com
