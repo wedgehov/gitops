@@ -1,8 +1,10 @@
 # Overrides for the 'tip-calculator-app' from the 'main' branch
 
 image:
-  tag: "latest"
-  pullPolicy: Always
+  tag: "main"
+  # Updated by CI on each main push to create an immutable deployment reference.
+  digest: ""
+  pullPolicy: IfNotPresent
 
 ingress:
   host: tip-calculator-main.vhovet.com

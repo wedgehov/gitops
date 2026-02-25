@@ -31,8 +31,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: "ghcr.io/wedgehov/tip-calculator-app:latest"
-        imagePullPolicy: Always
+        image: "ghcr.io/wedgehov/tip-calculator-app:main"
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
         resources:
