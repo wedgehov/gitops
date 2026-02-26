@@ -53,18 +53,6 @@ spec:
   selector:
     app: fm-todo-app-main-db
 ---
-# Source: fm-todo-app/templates/frontend-deployment.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: fm-todo-app-main-frontend
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-  selector:
-    app: fm-todo-app-main-frontend
----
 # Source: fm-todo-app/templates/backend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -78,14 +66,14 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: b02038b0b327c92cd0536a95eca5175d5705c04ed90959a93e358c734647846a
+        checksum/config: c582ac2a8820c207998a4b1440835619f4ee0a31f5d1a49abdce07ac82795e5a
       labels:
         app: fm-todo-app-main-backend
     spec:
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:latest"
-        imagePullPolicy: Always
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app:main"
+        imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
           value: "Host=fm-todo-app-main-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
@@ -125,33 +113,6 @@ spec:
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
----
-# Source: fm-todo-app/templates/frontend-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fm-todo-app-main-frontend
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: fm-todo-app-main-frontend
-  template:
-    metadata:
-      annotations:
-        checksum/config: b02038b0b327c92cd0536a95eca5175d5705c04ed90959a93e358c734647846a
-      labels:
-        app: fm-todo-app-main-frontend
-    spec:
-      containers:
-      - name: frontend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend:latest"
-        imagePullPolicy: Always
-        env:
-        - name: API_URL
-          value: "http://fm-todo-app-main-backend:8080"
-        ports:
-        - containerPort: 80
 ---
 # Source: fm-todo-app/templates/database-statefulset.yaml
 apiVersion: apps/v1
@@ -221,9 +182,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: fm-todo-app-main-frontend
+            name: fm-todo-app-main-backend
             port:
-              number: 80
+              number: 8080
 ---
 # Source: fm-todo-app/templates/backend-servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1

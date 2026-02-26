@@ -53,18 +53,6 @@ spec:
   selector:
     app: fm-todo-app-db
 ---
-# Source: fm-todo-app/templates/frontend-deployment.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: fm-todo-app-frontend
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-  selector:
-    app: fm-todo-app-frontend
----
 # Source: fm-todo-app/templates/backend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -78,13 +66,13 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 23a701d38e34a0722df9819d17dc02da28b65ffd303041d6027a7d3cf2bfec72
+        checksum/config: 8b3e46dc28428dbae53b4d199956848ca03eca3dfdd1def87a1f78e6c4d7894c
       labels:
         app: fm-todo-app-backend
     spec:
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-backend:v1.5.0"
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app:v1.5.0"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
@@ -125,33 +113,6 @@ spec:
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
----
-# Source: fm-todo-app/templates/frontend-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fm-todo-app-frontend
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: fm-todo-app-frontend
-  template:
-    metadata:
-      annotations:
-        checksum/config: 23a701d38e34a0722df9819d17dc02da28b65ffd303041d6027a7d3cf2bfec72
-      labels:
-        app: fm-todo-app-frontend
-    spec:
-      containers:
-      - name: frontend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app/todo-frontend:v1.5.0"
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: API_URL
-          value: "http://fm-todo-app-backend:8080"
-        ports:
-        - containerPort: 80
 ---
 # Source: fm-todo-app/templates/database-statefulset.yaml
 apiVersion: apps/v1
@@ -221,9 +182,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: fm-todo-app-frontend
+            name: fm-todo-app-backend
             port:
-              number: 80
+              number: 8080
 ---
 # Source: fm-todo-app/templates/backend-servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1

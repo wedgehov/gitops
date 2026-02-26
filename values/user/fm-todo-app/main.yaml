@@ -1,14 +1,10 @@
 # Overrides for the 'fm-todo-app' from the 'main' branch
 
-frontend:
-  image:
-    pullPolicy: Always
-    tag: "latest"
-
-backend:
-  image:
-    pullPolicy: Always
-    tag: "latest"
+image:
+  tag: "main"
+  # Updated by CI on each main push to create an immutable deployment reference.
+  digest: ""
+  pullPolicy: IfNotPresent
 
 ingress:
   host: fm-todo-app-main.vhovet.com
