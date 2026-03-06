@@ -66,13 +66,13 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: b1545fcdf1175dce74537e06374558a3ceb66396f46ac823147e0eb177071855
+        checksum/config: 4570c06c3ac569f04002e0a2870fb889a48942bb10daf6e51ad609b461a78d5e
       labels:
         app: fm-todo-app-main-backend
     spec:
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/frontend-mentor-todo-app@sha256:456868f4f6ffe892ed415c519df35ebe6629122d8293e690fdd64d282b1f7a72"
+        image: "ghcr.io/wedgehov/frontend-mentor-todo-app@sha256:3ffa0d95794e47cddf587d338c7cc1e199d597eaa13e6546ce13c68b957edd2b"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
