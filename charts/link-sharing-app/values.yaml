@@ -27,6 +27,16 @@ ingress:
   className: webapprouting.kubernetes.azure.com
   host: link-sharing-app.example.com
 
+serviceAccount:
+  create: false
+  name: ""
+  annotations: {}
+
+blobStorage:
+  accountUrl: ""
+  containerName: "avatars"
+  connectionString: ""
+
 resources: {}
 databaseResources: {}
 

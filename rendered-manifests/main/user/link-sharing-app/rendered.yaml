@@ -19,6 +19,16 @@ spec:
     - protocol: TCP
       port: 5432
 ---
+# Source: link-sharing-app/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: link-sharing-app-main-backend
+  labels:
+    app: link-sharing-app-main-backend
+  annotations:
+    azure.workload.identity/client-id: 0ffb9760-fb01-460c-889b-32b000f56249
+---
 # Source: link-sharing-app/templates/backend-deployment.yaml
 apiVersion: v1
 kind: Service
@@ -63,10 +73,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 38e120e5a827b170e19c762966ac97da9fd7ece06b561716b36de633613fdb4c
+        checksum/config: 19a7db0a5b5848a51b0ccf88077dbafc37b0d9a4693c3371a8bbfe9545d174cf
       labels:
         app: link-sharing-app-main-backend
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: link-sharing-app-main-backend
       imagePullSecrets:
         - name: ghcr-credentials
       containers:
@@ -87,6 +99,10 @@ spec:
           value: "always_on"
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
+        - name: BlobStorage__AccountUrl
+          value: "https://linksharingstore27c9.blob.core.windows.net"
+        - name: BlobStorage__ContainerName
+          value: "avatars"
         envFrom:
         - secretRef:
             name: link-sharing-app-db-secret

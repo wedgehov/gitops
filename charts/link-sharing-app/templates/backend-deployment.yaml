@@ -31,7 +31,13 @@ spec:
         checksum/config: {{ toYaml .Values | sha256sum }}
       labels:
         app: {{ .Release.Name }}-backend
+        {{- if .Values.serviceAccount.create }}
+        azure.workload.identity/use: "true"
+        {{- end }}
     spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default (printf "%s-backend" .Release.Name) }}
+      {{- end }}
       {{- with .Values.imagePullSecretName }}
       imagePullSecrets:
         - name: {{ . }}
@@ -58,6 +64,18 @@ spec:
           value: "always_on"
         - name: ASPNETCORE_ENVIRONMENT
           value: "{{ .Values.backend.aspnetcoreEnvironment }}"
+        {{- if .Values.blobStorage.accountUrl }}
+        - name: BlobStorage__AccountUrl
+          value: "{{ .Values.blobStorage.accountUrl }}"
+        {{- end }}
+        {{- if .Values.blobStorage.containerName }}
+        - name: BlobStorage__ContainerName
+          value: "{{ .Values.blobStorage.containerName }}"
+        {{- end }}
+        {{- if .Values.blobStorage.connectionString }}
+        - name: BlobStorage__ConnectionString
+          value: "{{ .Values.blobStorage.connectionString }}"
+        {{- end }}
         envFrom:
         - secretRef:
             name: {{ .Values.database.secretName }}

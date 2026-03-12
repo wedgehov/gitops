@@ -12,6 +12,15 @@ imagePullSecretName: "ghcr-credentials"
 ingress:
   host: link-sharing-app-main.vhovet.com
 
+serviceAccount:
+  create: true
+  annotations:
+    azure.workload.identity/client-id: "0ffb9760-fb01-460c-889b-32b000f56249"
+
+blobStorage:
+  accountUrl: "https://linksharingstore27c9.blob.core.windows.net"
+  containerName: "avatars"
+
 networkPolicy:
   enabled: true
 
