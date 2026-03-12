@@ -3,7 +3,7 @@
 image:
   tag: "main"
   # Updated by CI on each main push to create an immutable deployment reference.
-  digest: "sha256:b4398676525a890b0d8f4f6d8128606f7482ae6c905281255d61fffa8e70c12b"
+  digest: "sha256:05219d029df106ae4b3233024d23e3ab708fa7c7c12bf155930ef6956ed25e3a"
   pullPolicy: IfNotPresent
 
 # Private GHCR pull secret

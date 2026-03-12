@@ -73,7 +73,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 19a7db0a5b5848a51b0ccf88077dbafc37b0d9a4693c3371a8bbfe9545d174cf
+        checksum/config: 8ded62f54c4992fc73f872de17c0ac7f8718300cb7bfeeab33bbfe1153b03d36
       labels:
         app: link-sharing-app-main-backend
         azure.workload.identity/use: "true"
@@ -83,7 +83,7 @@ spec:
         - name: ghcr-credentials
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/link-sharing-app@sha256:b4398676525a890b0d8f4f6d8128606f7482ae6c905281255d61fffa8e70c12b"
+        image: "ghcr.io/wedgehov/link-sharing-app@sha256:05219d029df106ae4b3233024d23e3ab708fa7c7c12bf155930ef6956ed25e3a"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
