@@ -63,7 +63,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 1c30674f1b87514bc40ba14223cae64b843b4026f58a65e2d0cf3630da47904a
+        checksum/config: 38e120e5a827b170e19c762966ac97da9fd7ece06b561716b36de633613fdb4c
       labels:
         app: link-sharing-app-main-backend
     spec:
@@ -71,7 +71,7 @@ spec:
         - name: ghcr-credentials
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/link-sharing-app:main"
+        image: "ghcr.io/wedgehov/link-sharing-app@sha256:b4398676525a890b0d8f4f6d8128606f7482ae6c905281255d61fffa8e70c12b"
         imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
