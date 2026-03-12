@@ -38,8 +38,12 @@ spec:
       {{- end }}
       containers:
       - name: backend
-        image: "{{ .Values.backend.image.repository }}:{{- default .Values.imageTag .Values.backend.image.tag | required "An image tag is required. Set either .Values.imageTag or .Values.backend.image.tag" }}"
-        imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+        {{- if .Values.image.digest }}
+        image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+        {{- else }}
+        image: "{{ .Values.image.repository }}:{{ required "A value for image.tag is required" .Values.image.tag }}"
+        {{- end }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: ConnectionStrings__DefaultConnection
           value: "Host={{ .Release.Name }}-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"

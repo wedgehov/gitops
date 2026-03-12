@@ -2,23 +2,17 @@
 
 replicaCount: 1
 
-# Global image tag. Can be overridden per image.
-imageTag: ""
+# Shared image configuration for the unified app container.
+image:
+  repository: ghcr.io/wedgehov/link-sharing-app
+  pullPolicy: IfNotPresent
+  tag: ""
+  digest: "" # Optional immutable digest. If set, it takes precedence over tag.
 
 # For pulling private images from GHCR
 imagePullSecretName: ""
 
-frontend:
-  image:
-    repository: ghcr.io/wedgehov/link-sharing-app/frontend
-    pullPolicy: IfNotPresent
-    tag: "" # Defaults to .Values.imageTag
-
 backend:
-  image:
-    repository: ghcr.io/wedgehov/link-sharing-app/backend
-    pullPolicy: IfNotPresent
-    tag: "" # Defaults to .Values.imageTag
   aspnetcoreEnvironment: "Production"
 
 database:

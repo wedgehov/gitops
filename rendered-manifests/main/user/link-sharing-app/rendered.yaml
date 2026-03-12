@@ -50,18 +50,6 @@ spec:
   selector:
     app: link-sharing-app-main-db
 ---
-# Source: link-sharing-app/templates/frontend-deployment.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: link-sharing-app-main-frontend
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-  selector:
-    app: link-sharing-app-main-frontend
----
 # Source: link-sharing-app/templates/backend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -75,7 +63,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 1fee2590af99e57e7d1c691ca6364032dbb9b664741c940ee26e86780b7590d8
+        checksum/config: 1c30674f1b87514bc40ba14223cae64b843b4026f58a65e2d0cf3630da47904a
       labels:
         app: link-sharing-app-main-backend
     spec:
@@ -83,8 +71,8 @@ spec:
         - name: ghcr-credentials
       containers:
       - name: backend
-        image: "ghcr.io/wedgehov/link-sharing-app/backend:latest"
-        imagePullPolicy: Always
+        image: "ghcr.io/wedgehov/link-sharing-app:main"
+        imagePullPolicy: IfNotPresent
         env:
         - name: ConnectionStrings__DefaultConnection
           value: "Host=link-sharing-app-main-db;Port=5432;Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
@@ -120,35 +108,6 @@ spec:
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
----
-# Source: link-sharing-app/templates/frontend-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: link-sharing-app-main-frontend
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: link-sharing-app-main-frontend
-  template:
-    metadata:
-      annotations:
-        checksum/config: 1fee2590af99e57e7d1c691ca6364032dbb9b664741c940ee26e86780b7590d8
-      labels:
-        app: link-sharing-app-main-frontend
-    spec:
-      imagePullSecrets:
-        - name: ghcr-credentials
-      containers:
-      - name: frontend
-        image: "ghcr.io/wedgehov/link-sharing-app/frontend:latest"
-        imagePullPolicy: Always
-        env:
-        - name: API_URL
-          value: "http://link-sharing-app-main-backend:8080"
-        ports:
-        - containerPort: 80
 ---
 # Source: link-sharing-app/templates/database-statefulset.yaml
 apiVersion: apps/v1
@@ -218,9 +177,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: link-sharing-app-main-frontend
+            name: link-sharing-app-main-backend
             port:
-              number: 80
+              number: 8080
 ---
 # Source: link-sharing-app/templates/backend-servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1
