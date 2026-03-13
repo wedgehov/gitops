@@ -6,8 +6,8 @@ image:
   digest: "sha256:f6ac115dfc29d3ab4e6344528929d2b618d9fcb83b787e33dc7371c421e7f1c3"
   pullPolicy: IfNotPresent
 
-# Private GHCR pull secret
-imagePullSecretName: "ghcr-credentials"
+# Private GHCR pull secret (not needed if the image is public)
+# imagePullSecretName: "ghcr-credentials"
 
 ingress:
   host: link-sharing-app-main.vhovet.com
