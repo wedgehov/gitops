@@ -73,7 +73,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 3245c6e9c30866f8f0a4da0a6ca0bf33b758fdfbd4db2139f2f9228df0ce0fce
+        checksum/config: 942290b4f1cfb67bdafb3b9cc67a0d52a18420d08b3c146bad38747c77cac440
       labels:
         app: link-sharing-app-main-backend
         azure.workload.identity/use: "true"
@@ -110,7 +110,7 @@ spec:
         - containerPort: 8080
         resources:
           requests:
-            cpu: 50m
+            cpu: 10m
             memory: 128Mi
         readinessProbe:
           httpGet:
@@ -156,7 +156,7 @@ spec:
           name: postgres
         resources:
           requests:
-            cpu: 50m
+            cpu: 10m
             memory: 256Mi
         volumeMounts:
         - name: db-data
