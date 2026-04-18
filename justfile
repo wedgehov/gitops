@@ -10,7 +10,7 @@ EXTERNAL_SECRETS_CHART_VERSION := "2.0.1"
 
 # Meta-command to render all components for the 'dev' environment.
 # Start from a clean rendered-manifests state to avoid stale outputs.
-render-all-dev: clean-rendered-manifests render-argocd-dev render-external-secrets-dev render-kube-prometheus-stack-dev render-tempo-dev render-todo-app-dev render-tip-calculator-app-dev render-fm-todo-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-main
+render-all-dev: clean-rendered-manifests render-argocd-dev render-external-secrets-dev render-kube-prometheus-stack-dev render-tempo-dev render-tip-calculator-app-dev render-tip-calculator-app-main render-fm-todo-app-main render-link-sharing-app-main
 
 # Remove previously rendered manifests so only active targets remain.
 clean-rendered-manifests:
@@ -76,20 +76,10 @@ render-argocd-dev:
 	echo "Rendered argocd for dev."
 
 # Render user applications for the 'dev' environment
-render-todo-app-dev:
-	mkdir -p rendered-manifests/dev/user/todo-app
-	helm template todo-app ./charts/todo-app --namespace todo-app-dev -f ./values/user/todo-app/dev.yaml > ./rendered-manifests/dev/user/todo-app/rendered.yaml
-	echo "Rendered todo-app for dev."
-
 render-tip-calculator-app-dev:
 	mkdir -p rendered-manifests/dev/user/tip-calculator-app
 	helm template tip-calculator-app ./charts/tip-calculator-app --namespace tip-calculator-app-dev -f ./values/user/tip-calculator-app/dev.yaml > ./rendered-manifests/dev/user/tip-calculator-app/rendered.yaml
 	echo "Rendered tip-calculator-app for dev."
-
-render-fm-todo-app-dev:
-	mkdir -p rendered-manifests/dev/user/fm-todo-app
-	helm template fm-todo-app ./charts/fm-todo-app --namespace fm-todo-app-dev -f ./values/user/fm-todo-app/dev.yaml > ./rendered-manifests/dev/user/fm-todo-app/rendered.yaml
-	echo "Rendered fm-todo-app for dev."
 
 render-tip-calculator-app-main:
 	mkdir -p rendered-manifests/main/user/tip-calculator-app
