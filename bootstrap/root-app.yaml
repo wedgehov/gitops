@@ -32,11 +32,11 @@ spec:
           #   wave: "-4" # Deploy after monitoring stack but before apps
           #   path: rendered-manifests/dev/platform/tempo
           #   namespace: monitoring
-          - name: user-dashboards
-            wave: "15" # Deploy dashboards after the apps themselves
-            path: static-manifests/user-dashboards
-            # This application deploys its contents into the 'monitoring' namespace.
-            namespace: monitoring
+          # - name: user-dashboards
+          #   wave: "15" # Deploy dashboards after the apps themselves
+          #   path: static-manifests/user-dashboards
+          #   # This application deploys its contents into the 'monitoring' namespace.
+          #   namespace: monitoring
           # User Applications
           - name: todo-app-dev
             wave: "10" # Deploy user apps last
