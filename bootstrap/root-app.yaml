@@ -5,88 +5,88 @@ metadata:
   namespace: argocd
 spec:
   generators:
-  - list:
-      elements:
-      # Platform Applications
-      - name: argocd
-        wave: "-10" # Deploy ArgoCD first
-        path: rendered-manifests/dev/platform/argocd
-        namespace: argocd
-      - name: external-secrets
-        wave: "-8" # Deploy secret controller before secret resources
-        path: rendered-manifests/dev/platform/external-secrets
-        namespace: external-secrets
-      - name: secrets-config
-        wave: "-7" # Apply shared secret store and secret mappings once
-        path: static-manifests/platform/secrets-config
-        namespace: monitoring
-      - name: cert-manager-issuers
-        wave: "-6" # Deploy before app ingresses request certificates
-        path: static-manifests/platform/cert-manager
-        namespace: cert-manager
-      - name: kube-prometheus-stack
-        wave: "-5" # Deploy after ArgoCD but before other apps
-        path: rendered-manifests/dev/platform/kube-prometheus-stack
-        namespace: monitoring
-      - name: tempo-dev
-        wave: "-4" # Deploy after monitoring stack but before apps
-        path: rendered-manifests/dev/platform/tempo
-        namespace: monitoring
-      - name: user-dashboards
-        wave: "15" # Deploy dashboards after the apps themselves
-        path: static-manifests/user-dashboards
-        # This application deploys its contents into the 'monitoring' namespace.
-        namespace: monitoring
-      # User Applications
-      - name: todo-app-dev
-        wave: "10" # Deploy user apps last
-        path: rendered-manifests/dev/user/todo-app
-        namespace: todo-app-dev
-      - name: tip-calculator-app-dev
-        wave: "10" # Deploy user apps last
-        path: rendered-manifests/dev/user/tip-calculator-app
-        namespace: tip-calculator-app-dev
-      - name: fm-todo-app-dev
-        wave: "10" # Deploy user apps last
-        path: rendered-manifests/dev/user/fm-todo-app
-        namespace: fm-todo-app-dev
-      # User Applications from 'main' branch
-      - name: tip-calculator-app-main
-        wave: "11"
-        path: rendered-manifests/main/user/tip-calculator-app
-        namespace: tip-calculator-app-main
-      - name: fm-todo-app-main
-        wave: "11"
-        path: rendered-manifests/main/user/fm-todo-app
-        namespace: fm-todo-app-main
-      - name: link-sharing-app-main
-        wave: "11"
-        path: rendered-manifests/main/user/link-sharing-app
-        namespace: link-sharing-app-main
+    - list:
+        elements:
+          # Platform Applications
+          - name: argocd
+            wave: "-10" # Deploy ArgoCD first
+            path: rendered-manifests/dev/platform/argocd
+            namespace: argocd
+          - name: external-secrets
+            wave: "-8" # Deploy secret controller before secret resources
+            path: rendered-manifests/dev/platform/external-secrets
+            namespace: external-secrets
+          - name: secrets-config
+            wave: "-7" # Apply shared secret store and secret mappings once
+            path: static-manifests/platform/secrets-config
+            namespace: monitoring
+          - name: cert-manager-issuers
+            wave: "-6" # Deploy before app ingresses request certificates
+            path: static-manifests/platform/cert-manager
+            namespace: cert-manager
+          # - name: kube-prometheus-stack
+          #   wave: "-5" # Deploy after ArgoCD but before other apps
+          #   path: rendered-manifests/dev/platform/kube-prometheus-stack
+          #   namespace: monitoring
+          # - name: tempo-dev
+          #   wave: "-4" # Deploy after monitoring stack but before apps
+          #   path: rendered-manifests/dev/platform/tempo
+          #   namespace: monitoring
+          - name: user-dashboards
+            wave: "15" # Deploy dashboards after the apps themselves
+            path: static-manifests/user-dashboards
+            # This application deploys its contents into the 'monitoring' namespace.
+            namespace: monitoring
+          # User Applications
+          - name: todo-app-dev
+            wave: "10" # Deploy user apps last
+            path: rendered-manifests/dev/user/todo-app
+            namespace: todo-app-dev
+          - name: tip-calculator-app-dev
+            wave: "10" # Deploy user apps last
+            path: rendered-manifests/dev/user/tip-calculator-app
+            namespace: tip-calculator-app-dev
+          - name: fm-todo-app-dev
+            wave: "10" # Deploy user apps last
+            path: rendered-manifests/dev/user/fm-todo-app
+            namespace: fm-todo-app-dev
+          # User Applications from 'main' branch
+          - name: tip-calculator-app-main
+            wave: "11"
+            path: rendered-manifests/main/user/tip-calculator-app
+            namespace: tip-calculator-app-main
+          - name: fm-todo-app-main
+            wave: "11"
+            path: rendered-manifests/main/user/fm-todo-app
+            namespace: fm-todo-app-main
+          - name: link-sharing-app-main
+            wave: "11"
+            path: rendered-manifests/main/user/link-sharing-app
+            namespace: link-sharing-app-main
   template:
     metadata:
       # The name of the generated Application comes from the 'name' field in the elements list above.
-      name: '{{name}}'
+      name: "{{name}}"
       # All generated Application objects will be created in the `argocd` namespace.
-      namespace: 'argocd'
+      namespace: "argocd"
       annotations:
         # The sync-wave comes from the 'wave' field in the elements list.
-        argocd.argoproj.io/sync-wave: '{{wave | default "0"}}'
+        argocd.argoproj.io/sync-wave: "{{wave | default \"0\"}}"
     spec:
       project: default
       source:
-        repoURL: 'https://github.com/wedgehov/gitops.git'
-        targetRevision: 'HEAD'
+        repoURL: "https://github.com/wedgehov/gitops.git"
+        targetRevision: "HEAD"
         # The path to the rendered manifests for each application.
-        path: '{{path}}'
+        path: "{{path}}"
       destination:
         server: https://kubernetes.default.svc
         # The destination namespace for the application's resources comes from the 'namespace' field.
-        namespace: '{{namespace}}'
+        namespace: "{{namespace}}"
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
         syncOptions:
-        - CreateNamespace=true
-        - ServerSideApply=true
+          - CreateNamespace=true
+          - ServerSideApply=true
