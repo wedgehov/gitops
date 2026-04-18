@@ -14,10 +14,10 @@ networkPolicy:
 
 resources:
   requests:
-    cpu: 50m
+    cpu: 10m
     memory: 128Mi
 
 databaseResources:
   requests:
-    cpu: 50m
+    cpu: 10m
     memory: 256Mi
