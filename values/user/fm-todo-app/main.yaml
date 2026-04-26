@@ -3,7 +3,7 @@
 image:
   tag: "main"
   # Updated by CI on each main push to create an immutable deployment reference.
-  digest: "sha256:c33ef0913ad3453604e50948e8a8da12950f2e2b3199264212b4bc94be6d9011"
+  digest: "sha256:a248cd623b918fc529bb2f92712737d7366094803a5bc30beed60b25bc616940"
   pullPolicy: IfNotPresent
 
 ingress:
